@@ -21,6 +21,7 @@ require "./lib/yescode/database"
 require "./lib/yescode/queries"
 require "./lib/yescode/assets"
 require "./lib/yescode/asset_compiler"
+require "./lib/yescode/generator"
 
 require "./lib/yes_static"
 require "./lib/yes_logger"

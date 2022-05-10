@@ -1,11 +1,4 @@
-#!/usr/bin/env ruby
-
-require "sqlite3"
-require "fileutils"
-require "lib/yescode/database"
-require "lib/yescode/emote"
-require "lib/yescode/refinements"
-require "lib/yes_view"
+# frozen_string_literal: true
 
 module Yescode
   class Generator
