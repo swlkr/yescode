@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+
+require_relative "../lib/yescode/generator"
+require_relative "../lib/yescode/database"
+
+command, *args = ARGV
+
+case command
+when %w[g gen generate]
+  Yescode::Generator.generate(*args)
+when %w[migrate]
+  Yescode::Database.migrate
+when %w[rollback]
+  Yescode::Database.rollback(*args)
+else
+  puts Yescode::Generator::INVALID_COMMAND_MESSAGE
+end
