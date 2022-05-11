@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require "fileutils"
+require "securerandom"
+
 module Yescode
   class Generator
     INVALID_COMMAND_MESSAGE = "Command not supported. Try g, gen, generate, migrate or rollback."
@@ -36,30 +39,32 @@ module Yescode
       end
 
       def generate_app(dir)
+        FileUtils.mkdir_p(File.join(".", dir))
         {
           "public" => %w[css js],
           "db" => %w[migrations],
           "app" => %w[models views controllers emails jobs modules]
         }.each do |k, v|
           v.each do |folder|
-            FileUtils.mkdir_p(File.join(k, folder))
+            FileUtils.mkdir_p(File.join(".", dir, k, folder))
           end
         end
         File.write(
           File.join(dir, "Gemfile"),
           <<~RB
           source "https://rubygems.org"
-          git_source(:github) { |repo| "https://github.com/#{repo}.git" }
+          git_source(:github) { |repo| "https://github.com/\#\{repo\}.git" }
 
           ruby "3.1.2"
 
-          gem "falcon", "0.39.2"
+          gem "tipi", "0.52"
+          gem "yescode", "1.0.0"
           RB
         )
         File.write(
           File.join(dir, "Dockerfile"),
-          <<-DOCKER
-          FROM ruby:3.1.2-slim-bullseye
+          <<~DOCKER
+          FROM docker.io/library/ruby:slim
 
           RUN apt-get update -qq
           RUN apt-get install -y --no-install-recommends build-essential libjemalloc2 fonts-liberation wget gnupg2 libc6
@@ -73,11 +78,15 @@ module Yescode
               make install && \
               rm -rf sqlite-autoconf-3380200
 
-
           RUN wget https://github.com/watchexec/watchexec/releases/download/cli-v1.18.11/watchexec-1.18.11-x86_64-unknown-linux-gnu.tar.xz && \
               tar xf watchexec-1.18.11-x86_64-unknown-linux-gnu.tar.xz && \
               mv watchexec-1.18.11-x86_64-unknown-linux-gnu/watchexec /usr/local/bin/ && \
               rm -rf watchexec-1.18.11-x86_64-unknown-linux-gnu
+
+          RUN wget https://github.com/DarthSim/hivemind/releases/download/v1.1.0/hivemind-v1.1.0-linux-amd64.gz && \
+              gunzip hivemind-v1.1.0-linux-amd64.gz && \
+              mv hivemind-v1.1.0-linux-amd64 /usr/local/bin/hivemind && \
+              chmod +x /usr/local/bin/hivemind
 
           ENV LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2
 
@@ -104,7 +113,11 @@ module Yescode
         )
         File.write(
           File.join(dir, "Procfile"),
-          "web: bundle exec falcon serve --bind http://0.0.0.0:$PORT"
+          "web: bundle exec tipi --listen 0.0.0.0:$PORT config.ru"
+        )
+        File.write(
+          File.join(dir, "Procfile.dev"),
+          "web: watchexec --exts rb,emote,sql --restart --signal SIGKILL --debounce 100 -- bundle exec tipi --listen 0.0.0.0:$PORT config.ru"
         )
         File.write(
           File.join(dir, "config.ru"),
@@ -120,7 +133,7 @@ module Yescode
         )
         File.write(
           File.join(dir, "app", "routes.rb"),
-          <<-RB
+          <<~RB
           class Routes < YesRoutes
             get "/", :Home, :index
           end
@@ -128,8 +141,8 @@ module Yescode
         )
         File.write(
           File.join(dir, "app", "controllers", "home.rb"),
-          <<-RB
-          class Home < AppController
+          <<~RB
+          class Home < YesController
             def index
               HomeIndex.new
             end
@@ -138,20 +151,20 @@ module Yescode
         )
         File.write(
           File.join(dir, "app", "views", "home_index.rb"),
-          <<-RB
+          <<~RB
           class HomeIndex < Layout
           end
           RB
         )
         File.write(
           File.join(dir, "app", "views", "home_index.emote"),
-          <<-RB
+          <<~RB
           <h1>Welcome to yescode!</h1>
           RB
         )
         File.write(
           File.join(dir, "app", "views", "layout.rb"),
-          <<-RB
+          <<~RB
           class Layout < YesView
             def title
               "yescode"
@@ -165,7 +178,7 @@ module Yescode
         )
         File.write(
           File.join(dir, "app", "views", "layout.emote"),
-          <<-RB
+          <<~RB
           <!DOCTYPE html>
           <html lang="en">
             <head>
@@ -190,6 +203,61 @@ module Yescode
           <html
           RB
         )
+        File.write(
+          File.join(dir, "app.rb"),
+          <<~RB
+          require "yescode"
+
+          require_all %w[
+            ./app/modules/*
+            ./app/models/*
+            ./app/emails/*
+            ./app/jobs/*
+            ./app/views/layout
+            ./app/views/*
+            ./app/controllers/*
+            ./app/routes
+          ]
+
+          class App < YesApp
+            logger YesLogger.new($stdout)
+
+            use YesStatic, root: "public" if development?
+            use YesRackLogger
+            use Rack::ShowExceptions if development?
+            use Rack::Runtime
+            use Rack::ETag
+            use Rack::Head
+            use Rack::ContentLength
+            use Rack::ContentType
+            use Rack::Session::Cookie, default_session_cookie
+            use Rack::Csrf, raise: development?
+
+            css %w[]
+
+            js %w[]
+
+            migrations "db/migrations/*.sql"
+
+            routes :Routes
+
+            if production?
+              migrate
+              bundle_static_files
+            end
+          end
+          RB
+        )
+        File.write(
+          File.join(dir, ".env"),
+          <<~SH
+          RACK_ENV=development
+          PORT=9292
+          SECRET=#{SecureRandom.hex(32)}
+          DATABASE_URL=development.sqlite3
+          SH
+        )
+        # .env
         # Gemfile
         # Gemfile.lock
         # Dockerfile
@@ -210,6 +278,7 @@ module Yescode
         # app/modules
         # app/emails
         # app/routes.rb
+        # app.rb
       end
 
       def generate_mvc(filename)
