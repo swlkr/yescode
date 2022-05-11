@@ -18,6 +18,11 @@ RUN wget https://github.com/watchexec/watchexec/releases/download/cli-v1.18.11/w
     mv watchexec-1.18.11-x86_64-unknown-linux-gnu/watchexec /usr/local/bin/ && \
     rm -rf watchexec-1.18.11-x86_64-unknown-linux-gnu
 
+RUN wget https://github.com/DarthSim/hivemind/releases/download/v1.1.0/hivemind-v1.1.0-linux-amd64.gz && \
+    gunzip hivemind-v1.1.0-linux-amd64.gz && \
+    mv hivemind-v1.1.0-linux-amd64 /usr/local/bin/hivemind && \
+    chmod +x /usr/local/bin/hivemind
+
 ENV LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2
 
 ARG USER=app
