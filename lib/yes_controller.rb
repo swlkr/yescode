@@ -5,6 +5,8 @@ class YesController
 
     def layout
       @layout || Object.const_get(:Layout).new
+    rescue NameError => _e
+      nil
     end
 
     def before_action(*symbols)
