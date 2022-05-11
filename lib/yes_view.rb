@@ -25,7 +25,7 @@ class YesView
     end
 
     def template_name
-      @template_name || "#{snake_case}.emote"
+      @template_name || "#{to_s.snake_case}.emote"
     end
   end
 
