@@ -5,11 +5,11 @@ require "yescode"
 command, *args = ARGV
 
 case command
-when %w[g gen generate]
+when "g", "gen", "generate"
   Yescode::Generator.generate(*args)
-when %w[migrate]
+when "migrate"
   Yescode::Database.migrate
-when %w[rollback]
+when "rollback"
   Yescode::Database.rollback(*args)
 else
   puts Yescode::Generator::INVALID_COMMAND_MESSAGE
