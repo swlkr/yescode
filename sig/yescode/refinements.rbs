@@ -1,0 +1,7 @@
+module Refinements
+  SNAKE_CASE_REGEX: Regexp
+
+  def snake_case: () -> String
+  def camel_case: () -> String
+  def pascal_case: () -> String
+end

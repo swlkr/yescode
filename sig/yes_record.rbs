@@ -1,0 +1,72 @@
+class YesRecord
+  self.@table_name: untyped
+  self.@schema: untyped
+  self.@columns: untyped
+  self.@column_names: untyped
+  self.@primary_key_column: untyped
+  self.@query_filename: untyped
+  self.@queries: Hash[untyped, untyped]
+  @to_h: untyped
+
+  def self.table_name: -> untyped
+  def self.table: (untyped name) -> untyped
+  def self.schema: -> untyped
+  def self.columns: -> untyped
+  def self.column_names: -> untyped
+  def self.primary_key_column: -> untyped
+  def self.inspect: -> String
+  def self.connect: -> singleton(YesRecord)
+  def self.queries: (untyped filename) -> Hash[untyped, untyped]
+  def self.request_cache: -> Hash[untyped, untyped]
+  def self.clear_request_cache!: -> nil
+  def self.execute_query: (:all | :count name, *untyped params) -> untyped
+  def self.first: (untyped name, *untyped params) -> YesRecord?
+  def self.first!: (untyped name, *untyped params) -> YesRecord?
+  def self.select: (:all name, *untyped params) -> untyped
+  def self.all: (?:all name, *untyped params) -> untyped
+  def self.value: (:count name, *untyped params) -> untyped
+  def self.count: (?:count name, *untyped params) -> untyped
+  def self.values: (untyped keys) -> String
+  def self.insert_sql: (untyped keys) -> String
+  def self.insert: (untyped params) -> YesRecord?
+  def self.insert_all: -> nil
+  def self.update_all: -> nil
+  def self.delete_all: -> untyped
+  attr_accessor errors: {check: Array[untyped], null: Array[untyped], unique: Array[untyped]}
+  def initialize: (?Hash[untyped, untyped] args) -> void
+  def load: (?Hash[untyped, untyped] args) -> Hash[untyped, untyped]
+  def pk_column: -> untyped
+  def pk: -> untyped
+  def pk_param: -> Hash[untyped, untyped]
+  def update_params: (untyped params) -> untyped
+  def update_sql: (untyped keys) -> String
+  def update: (untyped params) -> bool
+  def delete: -> true
+  def check?: (untyped constraint_name) -> bool
+  def null?: (untyped column_name) -> bool
+  def duplicate?: (untyped column_name) -> bool
+  def error?: (untyped name) -> bool
+  def errors?: -> bool
+  def rescue_constraint_error: (nil error) -> Array[untyped]?
+  def to_h: -> untyped
+  def saved?: -> untyped
+  def to_param: -> untyped
+
+  class QueryNotFound < StandardError
+  end
+
+  class RecordNotFound < StandardError
+  end
+
+  class Column < Struct[untyped]
+    attr_accessor name(): untyped
+    attr_accessor type(): untyped
+    attr_accessor primary_key(): untyped
+  end
+
+  class Query < Struct[untyped]
+    attr_accessor name(): untyped
+    attr_accessor sql(): untyped
+    attr_accessor statement(): nil
+  end
+end

@@ -1,0 +1,30 @@
+class YesRoutes
+  attr_accessor self.paths: Hash[[Symbol, Symbol], String]
+  attr_accessor self.routes: Hash[String, Array[YesRoute]]
+
+  def self.match: (String verb, String path_string, Symbol class_name, Symbol method_name) -> void
+  def self.path: (Symbol class_name, Symbol method_name, ?(Hash[Symbol, String] | YesRecord)  params) -> String
+  def self.get: (String path_string, Symbol class_name, Symbol method_name) -> void
+  def self.post: (String path_string, Symbol class_name, Symbol method_name) -> void
+  def self.resource: (String path_string, Symbol class_name) -> void
+  def self.sub_params_in_path: (untyped path, ?Hash[untyped, untyped] params) -> String
+  def self.full_path: (String, String) -> String
+
+  class RouteDoesNotExistError < StandardError
+  end
+
+  class RouteParamsNilError < StandardError
+  end
+
+  class YesRoute
+    attr_accessor path: String
+    attr_accessor class_name: Symbol
+    attr_accessor method_name: Symbol
+
+    def initialize: (path: String, class_name: Symbol, method_name: Symbol) -> void
+  end
+end
+
+module Strings
+  def self.snake_case: (String) -> String
+end
