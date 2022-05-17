@@ -1,6 +1,4 @@
 require "minitest/autorun"
-require "./lib/yes_routes"
-require "./lib/yescode/refinements"
 
 class TestYesRoutes < Minitest::Test
   def setup
