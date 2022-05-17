@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 Mail.defaults do
-  delivery_method :logger, logger: Logger.new($stdout) if Yescode.env.development?
+  delivery_method :logger, logger: Logger.new($stdout) if Yescode.env.development? || Yescode.env.test?
 end
 
 class YesMail
-  using Refinements
+  include Yescode::Strings
   include Emote::Helpers
 
   class << self
@@ -44,29 +46,7 @@ class YesMail
   end
 
   def mail(from: nil, to: nil, subject: nil)
-    mail = Mail.new
-    mail[:from] = from || self.class._from
-    mail[:to] = to
-    mail[:subject] = subject
-
-    default_name = self.class.to_s.snake_case
-
-    text = part(self.class._text_view || "#{default_name}.text.emote")
-    html = part(self.class._html_view || "#{default_name}.html.emote")
-
-    text_part = Mail::Part.new do
-      body text
-    end
-
-    html_part = Mail::Part.new do
-      content_type "text/html; charset=UTF-8"
-      body html
-    end
-
-    mail.text_part = text_part
-    mail.html_part = html_part
-
-    mail.deliver
+    new_mail(from:, to:, subject:).deliver
   end
 
   private
@@ -79,10 +59,39 @@ class YesMail
     content = template(name)
     layout = template(self.class._layout || "layout")
 
+    return unless File.exist?(layout) || File.exist?(content)
+
     if File.exist?(layout)
       emote(layout, { content: })
     else
       emote(content)
     end
+  end
+
+  def new_mail(from:, to:, subject:)
+    mail = Mail.new
+    mail[:from] = from || self.class._from
+    mail[:to] = to
+    mail[:subject] = subject
+
+    default_name = snake_case(self.class.to_s)
+
+    text = part(self.class._text_view || "#{default_name}.text.emote")
+    html = part(self.class._html_view || "#{default_name}.html.emote")
+
+    if text
+      mail.text_part = Mail::Part.new do
+        body text
+      end
+    end
+
+    if html
+      mail.html_part = Mail::Part.new do
+        content_type "text/html; charset=UTF-8"
+        body html
+      end
+    end
+
+    mail
   end
 end
