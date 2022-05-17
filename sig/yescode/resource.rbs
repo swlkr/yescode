@@ -1,0 +1,6 @@
+module Yescode
+  module Resource
+    def self.routes: (String prefix, Symbol class_name) -> Array[Route]
+    def path: (String prefix, String suffix) -> String
+  end
+end

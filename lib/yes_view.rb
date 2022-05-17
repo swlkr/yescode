@@ -78,13 +78,13 @@ class YesView
   end
 
   def css
-    return [] unless assets
+    return [] unless assets && assets["css"]
 
     assets["css"].map { |filename| "/css/#{filename}" }
   end
 
   def js
-    return [] unless assets
+    return [] unless assets && assets["js"]
 
     assets["js"].map { |filename| "/js/#{filename}" }
   end

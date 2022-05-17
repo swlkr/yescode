@@ -1,0 +1,14 @@
+module Yescode
+  class Request < Hash[String, untyped]
+    attr_accessor path_info: untyped
+    attr_accessor request_method: untyped
+    attr_accessor rack_request_form_hash: Hash[String, untyped]
+    attr_accessor env: Hash[String, untyped]
+    attr_accessor ajax: bool
+
+    def initialize: (String request_method, String path_info, Hash[String, untyped] env) -> void
+    def []=: (String key, untyped value) -> untyped
+    def []: (String key) -> void
+    def yes_ajax?: -> bool
+  end
+end

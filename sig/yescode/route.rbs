@@ -1,0 +1,11 @@
+module Yescode
+  class Route
+    attr_accessor verb: String
+    attr_accessor path: String
+    attr_accessor class_name: Symbol
+    attr_accessor method_name: Symbol
+
+    def initialize: (String verb, String path, Symbol class_name, Symbol method_name) -> void
+    def controller!: (Request request) -> untyped
+  end
+end

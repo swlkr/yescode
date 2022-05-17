@@ -31,11 +31,15 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
   spec.required_ruby_version = ">= 3.1.0"
 
-  spec.add_development_dependency "minitest", "~> 5.14"
+  spec.add_development_dependency "minitest", "5.15.0"
+  spec.add_development_dependency "rbs", "2.4.0"
+  spec.add_development_dependency "steep", "0.52.2"
 
   spec.add_dependency "mail", "2.7.1"
   spec.add_dependency "net-smtp", "0.3.1"
   spec.add_dependency "rack", "2.2.3"
   spec.add_dependency "rack_csrf", "2.6.0"
   spec.add_dependency "sqlite3", "1.4.2"
+
 end
+

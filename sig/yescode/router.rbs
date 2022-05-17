@@ -1,0 +1,10 @@
+module Yescode
+  class Router
+    @app: untyped
+    @routes: Array[Yescode::Route]
+    @logger: Logger?
+
+    def initialize: (untyped app, Array[Yescode::Route] routes) -> void
+    def call: (Hash[String, String] env) -> [Integer, Hash[String, String], [String]]
+  end
+end

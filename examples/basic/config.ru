@@ -1,4 +1,4 @@
-require "yescode"
+require "lib/yescode"
 
 class HomeIndex < YesView
   view "home_index.emote"
