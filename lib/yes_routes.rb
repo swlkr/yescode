@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class YesRoutes
-  using Refinements
   class RouteDoesNotExistError < StandardError; end
   class RouteParamsNilError < StandardError; end
 
@@ -37,17 +36,16 @@ class YesRoutes
     end
 
     def resource(path_string, class_name)
-      snake_case = class_name.snake_case
       [
-        [:get, "index", ""],
-        [:get, "new", "/new"],
-        [:post, "create", "/new"],
-        [:get, "show", "/:#{snake_case}"],
-        [:get, "edit", "/:#{snake_case}/edit"],
-        [:post, "update", "/:#{snake_case}/edit"],
-        [:post, "delete", "/:#{snake_case}/edit"]
+        ["GET", :index, ""],
+        ["GET", :new, "/new"],
+        ["POST", :create, "/new"],
+        ["GET", :show, "/:id"],
+        ["GET", :edit, "/:id/edit"],
+        ["POST", :update, "/:id/edit"],
+        ["POST", :delete, "/:id/delete"]
       ].each do |method, method_name, suffix|
-        public_send(method, [path_string, suffix].join("/").gsub(%r{/+}, "/"), class_name, method_name)
+        match(method, full_path(path_string, suffix), class_name, method_name)
       end
     end
 
@@ -59,6 +57,10 @@ class YesRoutes
       re = Regexp.union(params.keys)
 
       path.gsub(re, params)
+    end
+
+    def full_path(prefix, suffix)
+      "#{prefix}/#{suffix}".gsub(%r{/+}, "/").chomp("/")
     end
   end
 end
