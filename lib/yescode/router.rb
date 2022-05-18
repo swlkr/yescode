@@ -8,8 +8,6 @@ module Yescode
   class ServerError < StandardError; end
 
   class Router
-    using Refinements
-
     class << self
       attr_accessor :logger
     end

@@ -5,10 +5,10 @@ require "securerandom"
 
 module Yescode
   class Generator
+    extend Strings
+
     INVALID_COMMAND_MESSAGE = "Command not supported. Try g, gen, generate, migrate or rollback."
     VIEW_DIR = File.join(".", "app", "views")
-
-    using Refinements
 
     class << self
       def generate(*gen_args)
@@ -326,7 +326,7 @@ module Yescode
 
       def generate_model(filename)
         filepath = File.join(".", "app", "models", "#{filename}.rb")
-        class_name = filename.pascal_case
+        class_name = pascal_case(filename)
         contents = <<~RB
         class #{class_name} < AppRecord
           queries "#{filename}.sql"
@@ -339,7 +339,7 @@ module Yescode
       end
 
       def generate_controller(filename)
-        class_name = filename.pascal_case
+        class_name = pascal_case(filename)
         var_name = filename
         route = <<~RB
         class #{class_name} < AppController
@@ -413,7 +413,7 @@ module Yescode
       end
 
       def generate_view(filename, accessors = [])
-        class_name = filename.pascal_case
+        class_name = pascal_case(filename)
         filepath = File.join(VIEW_DIR, "#{filename}.rb")
 
         return if File.exist?(filepath)
