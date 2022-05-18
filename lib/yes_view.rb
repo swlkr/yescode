@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class YesView
-  using Refinements
+  extend Yescode::Strings
   include Emote::Helpers
 
   class << self
@@ -25,7 +25,7 @@ class YesView
     end
 
     def template_name
-      @template_name || "#{to_s.snake_case}.emote"
+      @template_name || "#{filename}.emote"
     end
   end
 

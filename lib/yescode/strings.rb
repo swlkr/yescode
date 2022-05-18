@@ -18,5 +18,13 @@ module Yescode
     def pascal_case(str)
       str.split("_").map(&:capitalize).join
     end
+
+    def class_name
+      to_s.split("::").last
+    end
+
+    def filename
+      snake_case(class_name)
+    end
   end
 end
