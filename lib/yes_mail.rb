@@ -5,7 +5,7 @@ Mail.defaults do
 end
 
 class YesMail
-  include Yescode::Strings
+  extend Yescode::Strings
   include Emote::Helpers
 
   class << self
@@ -74,10 +74,10 @@ class YesMail
     mail[:to] = to
     mail[:subject] = subject
 
-    default_name = snake_case(self.class.to_s)
+    filename = self.class.filename
 
-    text = part(self.class._text_view || "#{default_name}.text.emote")
-    html = part(self.class._html_view || "#{default_name}.html.emote")
+    text = part(self.class._text_view || "#{filename}.text.emote")
+    html = part(self.class._html_view || "#{filename}.html.emote")
 
     if text
       mail.text_part = Mail::Part.new do

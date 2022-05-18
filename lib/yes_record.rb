@@ -12,7 +12,7 @@ class YesRecord
     attr_writer :table_name
 
     def table_name
-      @table_name || snake_case(to_s.split("::").last)
+      @table_name || filename
     end
 
     def table(name)
