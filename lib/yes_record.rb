@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class YesRecord
-  using Refinements
+  extend Yescode::Strings
 
   class QueryNotFound < StandardError; end
   class RecordNotFound < StandardError; end
@@ -12,7 +12,7 @@ class YesRecord
     attr_writer :table_name
 
     def table_name
-      @table_name || to_s.snake_case
+      @table_name || snake_case(to_s.split("::").last)
     end
 
     def table(name)
