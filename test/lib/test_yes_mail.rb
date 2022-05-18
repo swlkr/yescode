@@ -1,10 +1,6 @@
 require "minitest/autorun"
 
 class TestYesMail < Minitest::Test
-  def setup
-    ENV["RACK_ENV"] = "test"
-  end
-
   def test_new_mail
     mail = YesMail.new.send(:new_mail, from: "from", to: "to", subject: "subject")
 

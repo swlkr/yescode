@@ -1,10 +1,6 @@
 require "minitest/autorun"
 
 class TestYesRecord < Minitest::Test
-  def setup
-    ENV["RACK_ENV"] = "test"
-  end
-
   class Todo < YesRecord; end
   class TodoItem < YesRecord; end
 

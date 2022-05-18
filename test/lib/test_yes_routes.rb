@@ -2,7 +2,6 @@ require "minitest/autorun"
 
 class TestYesRoutes < Minitest::Test
   def setup
-    ENV["RACK_ENV"] = "test"
     YesRoutes.routes = Hash.new { |hash, key| hash[key] = [] }
   end
 
