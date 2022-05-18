@@ -11,7 +11,6 @@ require "sqlite3"
 
 require_relative "./yescode/request_cache"
 require_relative "./yescode/request_cache/middleware"
-require_relative "./yescode/refinements"
 require_relative "./yescode/emote"
 require_relative "./yescode/strings"
 require_relative "./yescode/env"
