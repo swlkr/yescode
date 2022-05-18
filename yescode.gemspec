@@ -1,9 +1,9 @@
-# frozen_string_literal: true
+require_relative "./lib/yescode/version"
 
 Gem::Specification.new do |spec|
   spec.platform      = Gem::Platform::RUBY
   spec.name          = "yescode"
-  spec.version       = "1.0.0"
+  spec.version       = Yescode::VERSION
   spec.author        = "Sean Walker"
   spec.email         = "sean@swlkr.com"
 

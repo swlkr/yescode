@@ -21,6 +21,7 @@ require_relative "./yescode/queries"
 require_relative "./yescode/assets"
 require_relative "./yescode/asset_compiler"
 require_relative "./yescode/generator"
+require_relative "./yescode/version"
 
 require_relative "./yes_static"
 require_relative "./yes_logger"

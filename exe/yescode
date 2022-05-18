@@ -11,6 +11,8 @@ when "migrate"
   Yescode::Database.migrate
 when "rollback"
   Yescode::Database.rollback(*args)
+when "-v", "--version"
+  puts Yescode::VERSION
 else
   puts Yescode::Generator::INVALID_COMMAND_MESSAGE
 end

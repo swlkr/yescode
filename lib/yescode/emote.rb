@@ -21,8 +21,6 @@
 require "cgi/escape"
 
 class Emote
-  VERSION = "1.3.1".freeze
-
   PATTERN = /
     ^[^\S\n]*(%)[^\S\n]*(.*?)(?:\n|\Z) | # Ruby evaluated lines
     (<\?)\s+(.*?)\s+\?>                | # Multiline Ruby blocks
