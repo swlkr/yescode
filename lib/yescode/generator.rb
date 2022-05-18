@@ -7,8 +7,167 @@ module Yescode
   class Generator
     extend Strings
 
-    INVALID_COMMAND_MESSAGE = "Command not supported. Try g, gen, generate, migrate or rollback."
     VIEW_DIR = File.join(".", "app", "views")
+
+    APP_HELP_MESSAGE = <<~TXT
+      Usage: yescode new [name]
+
+      Create a new Yescode application
+
+      Example:
+        yescode new todos
+
+      This will generate a new Yescode application in ./todos
+    TXT
+
+    CONTROLLER_HELP_MESSAGE = <<~TXT
+      Usage: yescode generate controller [name]
+
+      Create a new controller with all available actions
+
+      Example:
+        yescode generate controller todos
+
+      This will generate a controller named Todos in ./app/controllers/todos.rb
+    TXT
+
+    MIGRATION_HELP_MESSAGE = <<~TXT
+      Usage: yescode generate migration [name]
+
+      Create a new migration with -- up and -- down placeholders in ./db/migrations/[timestamp]_[migration name].sql
+
+      Example:
+        yescode generate migration create_table_todo
+
+      This will generate a common create table sql statement below -- up and a drop table below -- down
+
+
+      Example:
+        yescode generate migration add_created_at_to_todo
+
+      This will generate an empty sql file with -- up and -- down placeholders
+    TXT
+
+    MODEL_HELP_MESSAGE = <<~TXT
+      Usage: yescode generate model [name]
+
+      Create a new model
+
+      Example:
+        yescode generate model todo
+
+      This will generate a model named Todo in ./app/models/todo.rb
+    TXT
+
+    MVC_HELP_MESSAGE = <<~TXT
+      Usage: yescode generate mvc [name]
+
+      Create a new model, common views and controller all at once
+
+      Example:
+        yescode generate mvc todo
+
+      This will generate a model, common sql queries, views and controller:
+
+      - ./app/models/todo.rb
+      - ./app/models/todo.sql
+      - ./app/controllers/todos.rb
+      - ./app/views/todos_edit.rb
+      - ./app/views/todos_edit.emote
+      - ./app/views/todos_index.rb
+      - ./app/views/todos_index.emote
+      - ./app/views/todos_new.rb
+      - ./app/views/todos_new.emote
+      - ./app/views/todos_show.rb
+      - ./app/views/todos_show.emote
+    TXT
+
+    QUERIES_HELP_MESSAGE = <<~TXT
+      Usage: yescode generate queries [name]
+
+      Create common sql queries for a given table
+
+      Example:
+        yescode generate queries todo
+
+      This will generate common sql queries in ./app/models/todo.sql
+    TXT
+
+    TEMPLATE_HELP_MESSAGE = <<~TXT
+      Usage: yescode generate template [name]
+
+      Create a template file
+
+      Example:
+        yescode generate template todos_index
+
+      This will generate ./app/views/todos_index.emote
+    TXT
+
+    TEMPLATES_HELP_MESSAGE = <<~TXT
+      Usage: yescode generate templates [name]
+
+      Create common templates for a given controller
+
+      Example:
+        yescode generate templates todos
+
+      This will generate the following templates
+        - ./app/views/todos_edit.emote
+        - ./app/views/todos_index.emote
+        - ./app/views/todos_new.emote
+        - ./app/views/todos_show.emote
+        - ./app/views/todos_form.emote
+    TXT
+
+    VIEW_HELP_MESSAGE = <<~TXT
+      Usage: yescode generate view [name]
+
+      Create the view and template
+
+      Example:
+        yescode generate view todos_index
+
+      This will generate the following view and template:
+        - ./app/views/todos_index.rb
+        - ./app/views/todos_index.emote
+    TXT
+
+    VIEWS_HELP_MESSAGE = <<~TXT
+      Usage: yescode generate views [name]
+
+      Create common views and templates for a given controller
+
+      Example:
+        yescode generate views todos
+
+      This will generate the following views and templates
+        - ./app/views/todos_edit.rb
+        - ./app/views/todos_edit.emote
+        - ./app/views/todos_index.rb
+        - ./app/views/todos_index.emote
+        - ./app/views/todos_new.rb
+        - ./app/views/todos_new.emote
+        - ./app/views/todos_show.rb
+        - ./app/views/todos_show.emote
+        - ./app/views/todos_form.rb
+        - ./app/views/todos_form.emote
+    TXT
+
+    HELP_MESSAGE = <<~TXT
+      Usage: yescode generate GENERATOR [options]
+
+      Supported yescode generators:
+        controller    Create a new controller with all available actions
+        migration     Create a new migration
+        model         Create a new model
+        mvc           Create a new model, views and controller all at once
+        queries       Create common sql queries for a given table
+        template      Create just a template file
+        templates     Create just the templates for a given controller
+        view          Create the view and template
+        views         Create common views and templates for a given controller
+    TXT
 
     class << self
       def generate(*gen_args)
@@ -27,6 +186,8 @@ module Yescode
           generate_views(*args)
         when "template"
           generate_template(*args)
+        when "templates"
+          generate_templates(*args)
         when "migration"
           generate_migration(*args)
         when "mvc"
@@ -34,11 +195,16 @@ module Yescode
         when "app"
           generate_app(*args)
         else
-          puts INVALID_COMMAND_MESSAGE
+          puts HELP_MESSAGE
         end
       end
 
-      def generate_app(dir)
+      def generate_app(dir = nil)
+        if dir.nil?
+          puts APP_HELP_MESSAGE
+          return
+        end
+
         FileUtils.mkdir_p(File.join(".", dir))
         {
           "public" => %w[css js],
@@ -281,13 +447,23 @@ module Yescode
         # app.rb
       end
 
-      def generate_mvc(filename)
+      def generate_mvc(filename = nil)
+        if filename.nil?
+          puts MVC_HELP_MESSAGE
+          return
+        end
+
         generate_model(filename)
         generate_controller(filename)
         generate_views(filename)
       end
 
-      def generate_queries(filename)
+      def generate_queries(filename = nil)
+        if filename.nil?
+          puts QUERIES_HELP_MESSAGE
+          return
+        end
+
         filepath = File.join(".", "app", "models", "#{filename}.sql")
         contents = <<~SQL
         -- name: all
@@ -324,7 +500,12 @@ module Yescode
         File.write(filepath, contents)
       end
 
-      def generate_model(filename)
+      def generate_model(filename = nil)
+        if filename.nil?
+          puts MODEL_HELP_MESSAGE
+          return
+        end
+
         filepath = File.join(".", "app", "models", "#{filename}.rb")
         class_name = pascal_case(filename)
         contents = <<~RB
@@ -338,7 +519,12 @@ module Yescode
         generate_queries(filename)
       end
 
-      def generate_controller(filename)
+      def generate_controller(filename = nil)
+        if filename.nil?
+          puts CONTROLLER_HELP_MESSAGE
+          return
+        end
+
         class_name = pascal_case(filename)
         var_name = filename
         route = <<~RB
@@ -412,7 +598,12 @@ module Yescode
         File.write routes_filename, routes_file
       end
 
-      def generate_view(filename, accessors = [])
+      def generate_view(filename = nil, accessors = [])
+        if filename.nil?
+          puts VIEW_HELP_MESSAGE
+          return
+        end
+
         class_name = pascal_case(filename)
         filepath = File.join(VIEW_DIR, "#{filename}.rb")
 
@@ -434,12 +625,22 @@ module Yescode
       end
 
       def generate_views(prefix)
+        if prefix.nil?
+          puts VIEWS_HELP_MESSAGE
+          return
+        end
+
         %w[new show edit index].each do |suffix|
           generate_view("#{prefix}_#{suffix}", [])
         end
       end
 
-      def generate_template(filename)
+      def generate_template(filename = nil)
+        if filename.nil?
+          puts TEMPLATE_HELP_MESSAGE
+          return
+        end
+
         filename = File.join(VIEW_DIR, "#{filename}.emote")
 
         return if File.exist?(filename)
@@ -447,13 +648,22 @@ module Yescode
         File.write(filename, "<div></div>")
       end
 
-      def generate_templates(prefix)
+      def generate_templates(prefix = nil)
+        if prefix.nil?
+          puts TEMPLATES_HELP_MESSAGE
+          return
+        end
+
         %w[index new edit show form].each do |page|
           generate_template("#{prefix}_#{page}")
         end
       end
 
-      def generate_migration(filename, columns = [])
+      def generate_migration(filename = nil, columns = [])
+        if filename.nil?
+          puts MIGRATION_HELP_MESSAGE
+          return
+        end
         table_name = filename.split('_').last
         column_string = columns.map do |c|
           name, type = c.split(':')

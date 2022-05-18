@@ -19,6 +19,8 @@ module Yescode
       end
 
       def migrate(filenames)
+        return unless connection_string
+
         execute "create table if not exists yescode_migrations ( version integer primary key )"
         rows = execute("select version from yescode_migrations").map { |r| r["version"] }
         file_versions = filenames.map { |f| version(f) }
@@ -38,6 +40,8 @@ module Yescode
       end
 
       def rollback_schema(filenames, step: 1)
+        return unless connection_string
+
         execute "create table if not exists yescode_migrations ( version integer primary key )"
         rows = execute("select version from yescode_migrations order by version desc limit #{step}").map { |r| r["version"] }
 

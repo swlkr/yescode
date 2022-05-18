@@ -1,18 +1,40 @@
 #!/usr/bin/env ruby
 
-require "yescode"
+# frozen_string_literal: true
+
+require_relative "../lib/yescode"
+
+HELP_MESSAGE = <<~TXT
+  Usage: yescode <command> [options]
+
+  Supported yescode commands:
+    generate      Generate new code (aliases: g, gen)
+    migrate       Migrates the database with up sql in ./db/migrations/*.sql
+    rollback      Rolls the database back with down sql in ./db/migrations/*.sql
+
+    new           Create a new Yescode application
+
+    Example:
+      yescode new my_app
+
+    This will create a new application in ./my_app
+TXT
 
 command, *args = ARGV
 
 case command
 when "g", "gen", "generate"
   Yescode::Generator.generate(*args)
+when "new"
+  Yescode::Generator.generate_app(args[0])
 when "migrate"
-  Yescode::Database.migrate
+  Yescode::Database.migrate("db/migrations")
 when "rollback"
-  Yescode::Database.rollback(*args)
+  Yescode::Database.rollback_schema("db/migrations", step: args[0])
 when "-v", "--version"
   puts Yescode::VERSION
+when "-h", "--help"
+  puts HELP_MESSAGE
 else
-  puts Yescode::Generator::INVALID_COMMAND_MESSAGE
+  puts HELP_MESSAGE
 end
