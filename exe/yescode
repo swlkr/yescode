@@ -28,9 +28,9 @@ when "g", "gen", "generate"
 when "new"
   Yescode::Generator.generate_app(args[0])
 when "migrate"
-  Yescode::Database.migrate("db/migrations")
+  YesApp.migrate
 when "rollback"
-  Yescode::Database.rollback_schema("db/migrations", step: args[0])
+  YesApp.rollback(args[0] || 1)
 when "-v", "--version"
   puts Yescode::VERSION
 when "-h", "--help"

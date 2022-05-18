@@ -39,11 +39,13 @@ module Yescode
         end
       end
 
-      def rollback_schema(filenames, step: 1)
+      def rollback_schema(filenames, step:)
         return unless connection_string
 
         execute "create table if not exists yescode_migrations ( version integer primary key )"
-        rows = execute("select version from yescode_migrations order by version desc limit #{step}").map { |r| r["version"] }
+        rows = execute("select version from yescode_migrations order by version desc limit ?", step).map { |r| r["version"] }
+
+        return if rows.empty?
 
         transaction do
           rows.each do |row|

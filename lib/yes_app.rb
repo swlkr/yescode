@@ -63,16 +63,18 @@ class YesApp
       @assets.compile_assets
     end
 
-    def migrations(dir = "db/migrations")
+    def migrations(dir)
       @migrations ||= Dir[dir]
     end
 
     def migrate
-      Yescode::Database.migrate(migrations)
+      Yescode::Database.logger = YesLogger.new($stdout)
+      Yescode::Database.migrate(@migrations || Dir["./db/migrations/*.sql"])
     end
 
-    def rollback(step = 1)
-      Yescode::Database.rollback_schema(migrations, step:)
+    def rollback(step)
+      Yescode::Database.logger = YesLogger.new($stdout)
+      Yescode::Database.rollback_schema(@migrations || Dir["./db/migrations/*.sql"], step:)
     end
 
     def development?
