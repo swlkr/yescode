@@ -17,7 +17,7 @@ gem install yescode
 Generate a new app and get in there
 
 ```sh
-yescode g app todos
+yescode new todos
 cd todos
 ```
 
@@ -56,7 +56,7 @@ gem install yescode
 Generate a new app and get in there
 
 ```sh
-yescode g app todos
+yescode new todos
 cd todos
 ```
 
