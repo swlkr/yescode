@@ -68,7 +68,7 @@ class YesController
   end
 
   def not_found
-    [404, {"content-type" => "text/plain"}, ["not found"]]
+    [404, { "content-type" => "text/plain" }, ["not found"]]
   end
 
   def not_found!
@@ -76,7 +76,7 @@ class YesController
   end
 
   def server_error
-    [500, {"content-type" => "text/plain"}, ["internal server error"]]
+    [500, { "content-type" => "text/plain" }, ["internal server error"]]
   end
 
   def server_error!
