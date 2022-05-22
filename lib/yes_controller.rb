@@ -1,13 +1,6 @@
 class YesController
   class << self
-    attr_accessor :before_actions
-    attr_writer :layout
-
-    def layout
-      @layout || Object.const_get(:Layout).new
-    rescue NameError => _e
-      nil
-    end
+    attr_accessor :before_actions, :assets
 
     def before_action(*symbols)
       @before_actions = symbols
@@ -85,5 +78,17 @@ class YesController
 
   def path(*args)
     Object.const_get(:App).path(*args)
+  end
+
+  def render(view, layout: true)
+    view.csrf_name = csrf_name
+    view.csrf_value = csrf_value
+    view.assets = self.class.assets&.to_h || {}
+    view.session = session
+    view.ajax = @env.key?("HTTP_YES_AJAX")
+    content = view.render(view.template)
+    content = view.render(view.class.superclass.new.template, content:) if layout
+
+    ok content
   end
 end

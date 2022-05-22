@@ -24,7 +24,8 @@ class YesApp
 
       builder.use Yescode::RequestCache::Middleware
 
-      builder.run Yescode::Router.new(self, @routes)
+      Yescode::Router.assets = @assets
+      builder.run Yescode::Router.new(@routes)
 
       @app = builder.to_app
     end

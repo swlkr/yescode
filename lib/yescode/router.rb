@@ -9,11 +9,10 @@ module Yescode
 
   class Router
     class << self
-      attr_accessor :logger
+      attr_accessor :logger, :assets
     end
 
-    def initialize(app, routes)
-      @app = app
+    def initialize(routes)
       @routes = routes
       @logger = self.class.logger
     end
@@ -39,27 +38,20 @@ module Yescode
       rescue NameError => e
         raise RouteClassDoesNotExist, e.message
       end
-      obj = klass.new(env)
-      raise RouteMethodDoesNotExist, "#{class_name}##{method} does not exist" unless obj.respond_to?(method)
+      controller = klass.new(env)
+      raise RouteMethodDoesNotExist, "#{class_name}##{method} does not exist" unless controller.respond_to?(method)
 
       @logger&.info(msg: "Request dispatched", route: "#{class_name}##{method}", params: params.except(:_csrf))
+      klass.assets = self.class.assets
       klass.before_actions&.each do |before_action|
-        obj.send(before_action)
+        controller.send(before_action)
       end
-      response = obj.public_send(method)
+      response = controller.public_send(method)
       raise NotFoundError if response.nil?
 
       case response
       when YesView
-        response.csrf_name = obj.csrf_name
-        response.csrf_value = obj.csrf_value
-        response.assets = @app.assets.to_h
-        response.session = obj.session
-        response.ajax = env.key?("HTTP_YES_AJAX")
-        layout = klass.layout
-        content = response.render(response.template)
-        content = response.render(layout.template, content:) if layout && response.class < layout.class
-        obj.ok content
+        controller.render response
       else
         response
       end
