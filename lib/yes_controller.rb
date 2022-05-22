@@ -43,6 +43,10 @@ class YesController
     ok body, { "content-type" => "text/xml; charset=utf-8" }
   end
 
+  def json(body = nil)
+    ok body, { "content-type" => "application/json; charset=utf-8" }
+  end
+
   def redirect(controller_or_url, method_name = nil, params = {})
     if method_name
       response 302, nil, { "Location" => path(controller_or_url, method_name, params) }
