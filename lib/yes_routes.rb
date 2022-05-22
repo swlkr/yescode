@@ -35,6 +35,11 @@ class YesRoutes
       match("POST", path_string, class_name, method_name)
     end
 
+    def action(path_string, class_name)
+      match("GET", path_string, class_name, :new)
+      match("POST", path_string, class_name, :create)
+    end
+
     def resource(path_string, class_name)
       [
         ["GET", :index, ""],

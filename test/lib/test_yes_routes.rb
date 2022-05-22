@@ -5,6 +5,20 @@ class TestYesRoutes < Minitest::Test
     YesRoutes.routes = Hash.new { |hash, key| hash[key] = [] }
   end
 
+  def test_action_adds_action_routes
+    expected = {
+      "GET" => [
+        ["/signup", :Signups, :new]
+      ],
+      "POST" => [
+        ["/signup", :Signups, :create]
+      ]
+    }
+    YesRoutes.action("/signup", :Signups)
+
+    assert_equal expected, YesRoutes.routes
+  end
+
   def test_resource_adds_resource_routes
     expected = {
       "GET" => [
