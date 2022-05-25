@@ -19,6 +19,24 @@ class TestYesRoutes < Minitest::Test
     assert_equal expected, YesRoutes.routes
   end
 
+  def test_actions_adds_actions_routes
+    expected = {
+      "GET" => [
+        ["/profile", :Profile, :show],
+        ["/profile/new", :Profile, :new],
+        ["/profile/edit", :Profile, :edit]
+      ],
+      "POST" => [
+        ["/profile/new", :Profile, :create],
+        ["/profile/edit", :Profile, :update],
+        ["/profile/delete", :Profile, :delete]
+      ]
+    }
+    YesRoutes.actions("/profile", :Profile)
+
+    assert_equal expected, YesRoutes.routes
+  end
+
   def test_resource_adds_resource_routes
     expected = {
       "GET" => [
@@ -55,5 +73,32 @@ class TestYesRoutes < Minitest::Test
     YesRoutes.resource("/todos/:todo_id/comments", :Comments)
 
     assert_equal expected, YesRoutes.routes
+  end
+
+  def test_resources_routes_with_valid_input
+    expected = {
+      "GET" => [
+        ["/todos", :Todos, :index],
+        ["/todos/new", :Todos, :new],
+        ["/todos/:todo_id", :Todos, :show],
+        ["/todos/:todo_id/edit", :Todos, :edit]
+      ],
+      "POST" => [
+        ["/todos/new", :Todos, :create],
+        ["/todos/:todo_id/edit", :Todos, :update],
+        ["/todos/:todo_id/delete", :Todos, :delete]
+      ]
+    }
+    YesRoutes.resources("/todos/:todo_id", :Todos)
+
+    assert_equal expected, YesRoutes.routes
+  end
+
+  def test_resources_routes_with_invalid_input
+    assert_raises(StandardError, "Needs at least two url segments") { YesRoutes.resources("", :Todos) }
+  end
+
+  def test_resources_routes_without_param_as_last_segment
+    assert_raises(StandardError, "The last url segment needs to be a param") { YesRoutes.resources("/todos/hello", :Todos) }
   end
 end

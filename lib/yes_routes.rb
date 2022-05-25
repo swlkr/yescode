@@ -40,6 +40,15 @@ class YesRoutes
       match("POST", path_string, class_name, :create)
     end
 
+    def actions(path_string, class_name)
+      match("GET", path_string, class_name, :show)
+      match("GET", "#{path_string}/new", class_name, :new)
+      match("POST", "#{path_string}/new", class_name, :create)
+      match("GET", "#{path_string}/edit", class_name, :edit)
+      match("POST", "#{path_string}/edit", class_name, :update)
+      match("POST", "#{path_string}/delete", class_name, :delete)
+    end
+
     def resource(path_string, class_name)
       [
         ["GET", :index, ""],
@@ -51,6 +60,30 @@ class YesRoutes
         ["POST", :delete, "/:id/delete"]
       ].each do |method, method_name, suffix|
         match(method, full_path(path_string, suffix), class_name, method_name)
+      end
+    end
+
+    def resources(path_string, class_name)
+      raise StandardError, "Needs at least two url segments" if path_string.split("/").size < 2
+      raise StandardError, "The last url segment needs to be a param" unless path_string.split("/").last.include?(":")
+
+      *prefix, _ = path_string.split("/")
+      prefix = prefix.join("/")
+
+      [
+        ["GET", :index, "", :plural],
+        ["GET", :new, "/new", :plural],
+        ["POST", :create, "/new", :plural],
+        ["GET", :show, ""],
+        ["GET", :edit, "/edit"],
+        ["POST", :update, "/edit"],
+        ["POST", :delete, "/delete"]
+      ].each do |method, method_name, suffix, plural|
+        if plural
+          match(method, full_path(prefix, suffix), class_name, method_name)
+        else
+          match(method, full_path(path_string, suffix), class_name, method_name)
+        end
       end
     end
 
