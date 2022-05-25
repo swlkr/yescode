@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
 module Yescode
-  VERSION = "1.1.1"
+  VERSION = "22.05.24"
 end
