@@ -9,10 +9,9 @@ module Yescode
     end
 
     def camel_case(str)
-      result = pascal_case(str)
-      result[0] = result[0].downcase
+      first, *rest = str.split("_")
 
-      result
+      "#{first&.downcase}#{rest.map(&:capitalize).join}"
     end
 
     def pascal_case(str)
