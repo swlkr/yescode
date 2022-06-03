@@ -19,7 +19,7 @@ module Yescode
     end
 
     def class_name
-      to_s.split("::").last
+      to_s.split("::").last || ""
     end
 
     def filename
