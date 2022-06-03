@@ -18,19 +18,12 @@ module Yescode
     end
 
     def call(env)
-      path_info = env[Rack::PATH_INFO]
-      request_method = env[Rack::REQUEST_METHOD]
-      params = {}
-      route = @routes[request_method].find do |r|
-        path = Regexp.new("^#{r.first.gsub(/:(\w+)/, '(?<\1>[a-zA-Z0-9_\-=]+)')}$")
-        params = path_info.match(path)&.named_captures
-      end
+      request = Rack::Request.new(env)
+      route, params = find_route(request.request_method, request.path_info)
 
       raise RouteNotFound unless route
 
-      params.merge!(env[Rack::RACK_REQUEST_FORM_HASH] || {})
-            .transform_keys!(&:to_sym)
-      env["params"] = params
+      env["params"] = params&.merge(request.params)&.transform_keys(&:to_sym) || {}
       _, class_name, method = route
       klass = nil
       begin
@@ -41,8 +34,7 @@ module Yescode
       controller = klass.new(env)
       raise RouteMethodDoesNotExist, "#{class_name}##{method} does not exist" unless controller.respond_to?(method)
 
-      @logger&.info(msg: "Request dispatched", route: "#{class_name}##{method}", params: params.except(:_csrf))
-      klass.assets = self.class.assets
+      @logger&.info(msg: "Request dispatched", route: "#{class_name}##{method}", params: env["params"])
       klass.before_actions&.each do |before_action|
         controller.send(before_action)
       end
@@ -63,6 +55,18 @@ module Yescode
       raise if Env.development?
 
       [500, { "content-type" => "text/html" }, File.open("public/500.html")]
+    end
+
+    private
+
+    def find_route(request_method, path_info)
+      params = {}
+      route = YesRoutes.routes[request_method].find do |r|
+        found_path = Regexp.new("^#{r.first.gsub(/:(\w+)/, '(?<\1>[a-zA-Z0-9_\-=]+)')}$")
+        params = path_info.match(found_path)&.named_captures
+      end
+
+      [route, params]
     end
   end
 end
