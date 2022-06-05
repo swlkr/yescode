@@ -397,7 +397,7 @@ module Yescode
             use Rack::ContentLength
             use Rack::ContentType
             use Rack::Session::Cookie, default_session_cookie
-            use Rack::Csrf, raise: development?
+            use YesCsrf, raise: development?
 
             css %w[]
 
