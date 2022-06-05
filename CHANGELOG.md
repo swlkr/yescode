@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 # Unreleased
 
+### Breaking Changes
+
+- Drop dependency on Rack::Csrf and replace with YesCsrf (Change `Rack::Csrf` in `app` to `YesCsrf`)
+
+### Features
+
+- Static types with Ruby 3, RBS and Steep!
+
 # [22.05.24]
 
 Switched to calendar versioning, the new format is YY.MM.DD
