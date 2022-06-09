@@ -13,6 +13,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Features
 
 - Static types with Ruby 3, RBS and Steep!
+- Use falcon as default webserver not tipi
+- Add options to `default_session_cookie`
 
 # [22.05.24]
 
