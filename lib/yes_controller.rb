@@ -53,11 +53,11 @@ class YesController
   end
 
   def csrf_value
-    Rack::Csrf.token(@env) if @env['rack.session']
+    YesCsrf.token(@env)
   end
 
   def csrf_name
-    Rack::Csrf.field
+    YesCsrf::FIELD
   end
 
   def not_found

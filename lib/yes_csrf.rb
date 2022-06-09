@@ -6,10 +6,6 @@ class YesCsrf
 
   FIELD = "_csrf"
 
-  def self.field
-    FIELD
-  end
-
   def self.token(env)
     env["rack.session"]["csrf.token"] ||= SecureRandom.urlsafe_base64(32)
   end
