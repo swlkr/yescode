@@ -1,0 +1,25 @@
+module Yescode
+  class RouteNotFound < StandardError
+  end
+
+  class RouteUndefined < StandardError
+  end
+
+  class NotFoundError < StandardError
+  end
+
+  class ServerError < StandardError
+  end
+
+  class Router
+    attr_accessor self.logger: Logger?
+
+    def initialize: -> void
+    def call: (Hash[untyped, untyped] env) -> [Integer, Hash[untyped, untyped], untyped]
+
+    private
+
+    def find_route: (String request_method, String path_info) -> [([String, Symbol, Symbol] | nil), (Hash[String, String | nil] | nil)]
+    def route_defined?: (Symbol? class_name, Symbol? method_name) -> bool
+  end
+end

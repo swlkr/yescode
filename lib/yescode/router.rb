@@ -2,52 +2,40 @@
 
 module Yescode
   class RouteNotFound < StandardError; end
-  class RouteClassDoesNotExist < StandardError; end
-  class RouteMethodDoesNotExist < StandardError; end
+  class RouteUndefined < StandardError; end
   class NotFoundError < StandardError; end
   class ServerError < StandardError; end
 
   class Router
     class << self
-      attr_accessor :logger, :assets
-    end
-
-    def initialize(routes)
-      @routes = routes
-      @logger = self.class.logger
+      attr_accessor :logger
     end
 
     def call(env)
       request = Rack::Request.new(env)
-      route, params = find_route(request.request_method, request.path_info)
+      route, params = find_route(request.request_method || "", request.path_info || "")
+      _, class_name, method = route
 
-      raise RouteNotFound unless route
+      raise(RouteUndefined, "#{method} is not defined in class #{class_name}") unless route_defined?(class_name, method)
 
       env["params"] = params&.merge(request.params)&.transform_keys(&:to_sym) || {}
-      _, class_name, method = route
-      klass = nil
-      begin
-        klass = Object.const_get(class_name)
-      rescue NameError => e
-        raise RouteClassDoesNotExist, e.message
-      end
+      klass = Object.const_get(class_name) unless class_name.nil?
       controller = klass.new(env)
-      raise RouteMethodDoesNotExist, "#{class_name}##{method} does not exist" unless controller.respond_to?(method)
-
-      @logger&.info(msg: "Request dispatched", route: "#{class_name}##{method}", params: env["params"])
       klass.before_actions&.each do |before_action|
         controller.send(before_action)
       end
+      self.class.logger&.info(msg: "Request dispatched", route: "#{class_name}##{method}", params: env["params"])
       response = controller.public_send(method)
-      raise NotFoundError if response.nil?
 
       case response
       when YesView
         controller.render response
+      when nil
+        raise NotFoundError
       else
         response
       end
-    rescue NotFoundError, RouteNotFound
+    rescue NotFoundError
       raise if Env.development?
 
       [404, { "content-type" => "text/html" }, File.open("public/404.html")]
@@ -60,13 +48,22 @@ module Yescode
     private
 
     def find_route(request_method, path_info)
-      params = {}
-      route = YesRoutes.routes[request_method].find do |r|
-        found_path = Regexp.new("^#{r.first.gsub(/:(\w+)/, '(?<\1>[a-zA-Z0-9_\-=]+)')}$")
-        params = path_info.match(found_path)&.named_captures
+      params = nil || { "" => nil, "_" => "" } # use value as a type for steep?
+      routes = YesRoutes.routes[request_method] || []
+      route = routes.find do |route_path,|
+        path_regex = Regexp.new("^#{route_path.gsub(/:(\w+)/, '(?<\1>[a-zA-Z0-9_\-=]+)')}$")
+        params = path_info.match(path_regex)&.named_captures
       end
 
       [route, params]
+    end
+
+    def route_defined?(class_name, method_name)
+      return false if class_name.nil?
+
+      Object.const_get(class_name).method_defined?(method_name)
+    rescue NameError => _e
+      false
     end
   end
 end
