@@ -223,8 +223,12 @@ module Yescode
 
           ruby "3.1.2"
 
-          gem "tipi", "0.52"
-          gem "yescode", "1.0.0"
+          gem "falcon", "0.39.2"
+          gem "yescode", "#{VERSION}"
+
+          group :development do
+            gem "minitest", "5.15.0"
+          end
           RB
         )
         File.write(
@@ -279,15 +283,31 @@ module Yescode
         )
         File.write(
           File.join(dir, "Procfile"),
-          "web: bundle exec tipi --listen 0.0.0.0:$PORT config.ru"
+          "web: bundle exec falcon serve --bind http://0.0.0.0:$PORT"
+        )
+        File.write(
+          File.join(dir, "restart-dev-server.sh"),
+          "kill -HUP $(cat tmp/server.pid | xargs)"
         )
         File.write(
           File.join(dir, "Procfile.dev"),
-          "web: watchexec --exts rb,emote,sql --restart --signal SIGKILL --debounce 100 -- bundle exec tipi --listen 0.0.0.0:$PORT config.ru"
+          <<-SH
+          web: bundle exec falcon serve --count 1 --bind http://localhost:$PORT
+          watch: watchexec --exts emote,rb,sql --postpone ./restart-dev-server.sh
+          SH
         )
         File.write(
           File.join(dir, "config.ru"),
-          "require \"./app\"\n\nrun App.freeze.app"
+          <<-RB
+          require "fileutils"
+          require "./app"
+
+          FILENAME = "tmp/server.pid".freeze
+          FileUtils.mkdir_p("tmp")
+          File.write(FILENAME, Process.ppid)
+
+          run App.freeze.app
+          RB
         )
         File.write(
           File.join(dir, "public", "404.html"),
