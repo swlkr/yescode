@@ -90,7 +90,7 @@ class YesApp
       Yescode::Env.production?
     end
 
-    def default_session_cookie
+    def default_session_cookie(options = {})
       {
         path: "/",
         expire_after: 2_592_000,
@@ -98,7 +98,7 @@ class YesApp
         http_only: true,
         same_site: :strict,
         secure: production?
-      }
+      }.merge(options)
     end
 
     def routes(class_name = :Routes)
