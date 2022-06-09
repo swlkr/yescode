@@ -1,0 +1,15 @@
+module Yescode
+  module Schema
+    def self.included: (class klass) -> void
+
+    module ClassMethods
+      include Strings
+
+      def self?.table_name: () -> String
+      def self?.primary_key_column: () -> String
+      def self?.schema: () -> Array[Hash[String, untyped]]
+      def self?.columns: () -> Array[Column]
+      def self?.inspect: () -> void
+    end
+  end
+end

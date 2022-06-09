@@ -1,0 +1,5 @@
+module Yescode
+  class AssetCompiler
+    def self.compile: (Array[String] assets, String ext) -> [String]
+  end
+end

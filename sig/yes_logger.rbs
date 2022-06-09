@@ -1,0 +1,5 @@
+class YesLogger < Logger
+  @formatter: Yescode::LogfmtFormatter
+
+  def initialize: (*untyped) -> void
+end

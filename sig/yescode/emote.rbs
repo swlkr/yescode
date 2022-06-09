@@ -1,0 +1,15 @@
+module Yescode
+  class Emote
+    PATTERN: Regexp
+
+    def self.h: (untyped value) -> String
+    def self.src: (String template) -> String
+    def self.parse: (String template, YesView context, String name) -> ^(Hash[untyped, untyped], String) -> String
+
+    module Helpers
+      def emote: (String filename, YesView context) -> String
+      def emote_cache: -> Hash[untyped, untyped]
+      def file_cache: -> Hash[untyped, untyped]
+    end
+  end
+end

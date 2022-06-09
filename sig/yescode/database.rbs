@@ -1,0 +1,23 @@
+module Yescode
+  class Database
+    attr_accessor self.logger: ::Logger
+    attr_writer self.connection_string: String?
+
+    self.@connection_string: String?
+    self.@connection: untyped
+    self.@schema: Hash[String, Array[Hash[String, untyped]]]
+    self.@abort: bool
+
+    def self.connection_string: -> String?
+    def self.connection: -> untyped
+    def self.version: (String filename) -> Integer
+    def self.migrate: (Array[String] filenames) -> void
+    def self.rollback_schema: (Array[String] filenames, step: Integer) -> void
+    def self.transaction: (?Symbol mode) { (singleton(Database)) -> untyped } -> void
+    def self.rollback: -> bool
+    def self.execute: (String sql, ?(Hash[untyped, untyped] | Array[untyped]) params) -> Array[Hash[untyped, untyped]]
+    def self.get_first_value: (String sql, ?(Hash[untyped, untyped] | Array[untyped]) params) -> (Integer | Float | String | nil)
+    def self.get_first_row: (String sql, ?(Hash[untyped, untyped] | Array[untyped]) params) -> (Hash[untyped, untyped] | nil)
+    def self.schema: -> Hash[String, Array[Hash[String, untyped]]]
+  end
+end

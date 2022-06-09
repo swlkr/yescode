@@ -1,0 +1,8 @@
+module Yescode
+  class LogfmtFormatter
+    def call: (String severity, Time datetime, (String | Symbol) progname, Hash[(String | Symbol)?, untyped] msg) -> String
+
+    private
+    def blue: (String str) -> String
+  end
+end

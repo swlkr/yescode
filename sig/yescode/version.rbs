@@ -1,0 +1,3 @@
+module Yescode
+  VERSION: String
+end

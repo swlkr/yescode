@@ -1,0 +1,24 @@
+# TypeProf 0.21.2
+
+# Classes
+class YesCsrf
+  @app: untyped
+  @raise_if_invalid: bool
+
+  FIELD: String
+
+  def self.field: -> String
+  def self.token: (Hash[String, untyped] env) -> String
+  def initialize: (untyped app, ?Hash[untyped, untyped]) -> void
+  def call: (Hash[String, untyped] env) -> [Integer, Hash[untyped, untyped], Array[untyped]]
+
+  private
+
+  def valid?: (Hash[untyped, untyped] env) -> bool
+
+  class SessionUnavailable < StandardError
+  end
+
+  class InvalidCsrfToken < StandardError
+  end
+end

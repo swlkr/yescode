@@ -2,18 +2,14 @@
 
 class YesView
   extend Yescode::Strings
-  include Emote::Helpers
+  include Yescode::Emote::Helpers
 
   class << self
-    attr_writer :template_path, :layout, :template_name
+    attr_writer :template_path, :template_name
     attr_accessor :paths, :logger
 
     def template_path
       @template_path || File.join(".", "app", "views")
-    end
-
-    def layout
-      @layout || "layout"
     end
 
     def template
@@ -29,23 +25,22 @@ class YesView
     end
   end
 
-  attr_accessor :csrf_name, :csrf_value, :assets, :session, :ajax
+  attr_accessor :csrf_name, :csrf_value, :session, :ajax
 
   def template
     self.class.template
   end
 
-  def render(tmpl, params = {})
+  def render(tmpl)
     case tmpl
     when YesView
       tmpl.csrf_name = csrf_name
       tmpl.csrf_value = csrf_value
       tmpl.session = session
-      tmpl.assets = assets
       tmpl.ajax = ajax
-      emote(tmpl.template, params, tmpl)
+      emote(tmpl.template, tmpl)
     when String
-      emote(tmpl, params)
+      emote(tmpl, self)
     else
       raise StandardError, "Unsupported template type passed to render"
     end
@@ -78,19 +73,15 @@ class YesView
   end
 
   def css
-    return [] unless assets
-
-    assets["css"].map { |filename| "/css/#{filename}" }
+    (Yescode::Assets.css || []).map { |filename| "/css/#{filename}" }
   end
 
   def js
-    return [] unless assets
-
-    assets["js"].map { |filename| "/js/#{filename}" }
+    (Yescode::Assets.js || []).map { |filename| "/js/#{filename}" }
   end
 
   def path(class_name, method_name, params = {})
-    Object.const_get(:App).path(class_name, method_name, params)
+    YesRoutes.path(class_name, method_name, params)
   end
 
   def fetch(class_name, method_name, params = {})

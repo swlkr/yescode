@@ -1,6 +1,6 @@
 class YesController
   class << self
-    attr_accessor :before_actions, :assets
+    attr_accessor :before_actions
 
     def before_action(*symbols)
       @before_actions = symbols
@@ -41,11 +41,16 @@ class YesController
   end
 
   def redirect(controller_or_url, method_name = nil, params = {})
-    if method_name
-      response 302, nil, { "Location" => path(controller_or_url, method_name, params) }
-    else
-      response 302, nil, { "Location" => controller_or_url }
-    end
+    location = case controller_or_url
+               when String
+                 controller_or_url
+               when Symbol
+                 raise StandardError, "Unsupported type as first argument to redirect" if method_name.nil?
+
+                 path(controller_or_url, method_name, params)
+               end
+
+    response(302, nil, { "Location" => location })
   end
 
   def params
@@ -53,11 +58,11 @@ class YesController
   end
 
   def csrf_value
-    Rack::Csrf.token(@env) if @env['rack.session']
+    YesCsrf.token(@env)
   end
 
   def csrf_name
-    Rack::Csrf.field
+    YesCsrf.field
   end
 
   def not_found
@@ -65,7 +70,7 @@ class YesController
   end
 
   def not_found!
-    raise NotFoundError
+    raise StandardError
   end
 
   def server_error
@@ -73,21 +78,23 @@ class YesController
   end
 
   def server_error!
-    raise ServerError
+    raise StandardError
   end
 
-  def path(*args)
-    Object.const_get(:App).path(*args)
+  def path(class_name, method_name, params = {})
+    YesRoutes.path(class_name, method_name, params)
+  end
+
+  def ajax
+    @env.key?("HTTP_YES_AJAX")
   end
 
   def render(view, layout: true)
     view.csrf_name = csrf_name
     view.csrf_value = csrf_value
-    view.assets = self.class.assets&.to_h || {}
     view.session = session
-    view.ajax = @env.key?("HTTP_YES_AJAX")
-    content = view.render(view.template)
-    content = view.render(view.class.superclass.new.template, content:) if layout
+    view.ajax = ajax
+    content = view.render(view.class.superclass.new.template) if layout
 
     ok content
   end

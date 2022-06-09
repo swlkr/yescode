@@ -1,0 +1,12 @@
+module YesTable
+  def self.included: (class klass) -> untyped
+
+  module ClassMethods
+    def find: (untyped id) -> untyped
+    def all: -> untyped
+    def count: -> untyped
+    def insert: (untyped params) -> nil
+    def insert_all: (untyped records) -> Integer
+    def delete_all: -> untyped
+  end
+end

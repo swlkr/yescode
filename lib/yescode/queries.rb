@@ -12,7 +12,7 @@ module Yescode
       def queries(filename)
         queries = []
 
-        File.foreach filename do |line|
+        File.readlines(filename).each do |line|
           query_name = name(line)
           query_sql = sql(line)
 

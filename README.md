@@ -36,7 +36,7 @@ export $(cat .env | xargs)
 Start the server
 
 ```sh
-bundle exec tipi --listen localhost:9292 config.ru
+bundle exec falcon serve --count 1 --bind http://localhost:9292
 ```
 
 Test it out with curl or you can just visit `http://localhost:9292` in your browser

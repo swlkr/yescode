@@ -175,25 +175,25 @@ module Yescode
 
         case type
         when "controller"
-          generate_controller(*args)
+          generate_controller(args[0])
         when "queries"
-          generate_queries(*args)
+          generate_queries(args[0])
         when "model"
-          generate_model(*args)
+          generate_model(args[0])
         when "view"
-          generate_view(*args)
+          generate_view(args[0], args.drop(1))
         when "views"
-          generate_views(*args)
+          generate_views(args[0])
         when "template"
-          generate_template(*args)
+          generate_template(args[0])
         when "templates"
-          generate_templates(*args)
+          generate_templates(args[0])
         when "migration"
-          generate_migration(*args)
+          generate_migration(args[0], args.drop(1))
         when "mvc"
-          generate_mvc(*args)
+          generate_mvc(args[0])
         when "app"
-          generate_app(*args)
+          generate_app(args[0])
         else
           puts HELP_MESSAGE
         end
@@ -223,7 +223,7 @@ module Yescode
 
           ruby "3.1.2"
 
-          gem "tipi", "0.52"
+          gem "falcon", "0.39.2"
           gem "yescode", "1.0.0"
           RB
         )
@@ -279,11 +279,11 @@ module Yescode
         )
         File.write(
           File.join(dir, "Procfile"),
-          "web: bundle exec tipi --listen 0.0.0.0:$PORT config.ru"
+          "web: bundle exec falcon serve --bind http://0.0.0.0:$PORT"
         )
         File.write(
           File.join(dir, "Procfile.dev"),
-          "web: watchexec --exts rb,emote,sql --restart --signal SIGKILL --debounce 100 -- bundle exec tipi --listen 0.0.0.0:$PORT config.ru"
+          "web: watchexec --exts rb,emote,sql --restart --signal SIGHUP --debounce 100 -- bundle exec falcon serve --count 1 --bind http://0.0.0.0:$PORT"
         )
         File.write(
           File.join(dir, "config.ru"),
@@ -363,7 +363,7 @@ module Yescode
               <nav>
                 <a href={{path :Home, :index}}>Home</a>
               </nav>
-              ${content}
+              ${render self}
             </body>
           </html>
           <html
@@ -402,10 +402,6 @@ module Yescode
             css %w[]
 
             js %w[]
-
-            migrations "db/migrations/*.sql"
-
-            routes :Routes
 
             if production?
               migrate
@@ -515,7 +511,6 @@ module Yescode
         RB
         File.write(filepath, contents)
 
-        generate_migration("create_table_#{filename}")
         generate_queries(filename)
       end
 
@@ -592,7 +587,7 @@ module Yescode
 
         routes_filename = File.join(".", "app", "routes.rb")
         routes_file = File.read(routes_filename)
-        idx = routes_file.rindex(/end/)
+        idx = routes_file.rindex(/end/) || -1
         routes_file.insert(idx, "\n  resource \"/#{filename}\", :#{class_name}\n")
 
         File.write routes_filename, routes_file

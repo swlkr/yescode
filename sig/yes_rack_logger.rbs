@@ -1,0 +1,14 @@
+class YesRackLogger
+  attr_accessor self.logger: Logger
+
+  @app: untyped
+  @logger: untyped
+
+  def initialize: (untyped app) -> void
+  def call: (untyped env) -> untyped
+
+  private
+  def common_parts: (untyped env) -> Hash[Symbol, String]
+  def log_request: (untyped env) -> void
+  def log_response: (untyped env, [Integer, Hash[String, String], Array[String]] response, Integer allocations) -> void
+end

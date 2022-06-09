@@ -1,0 +1,23 @@
+class YesApp
+  attr_accessor self.middleware: Array[[untyped, untyped]]
+
+  self.@middleware: Array[[untyped, untyped]]
+  self.@app: untyped
+  self.@logger: Logger?
+
+  def self.use: (untyped middleware, *untyped args) -> Array[[untyped, untyped]]
+  def self.app: -> untyped
+  def self.build_rack_app: -> untyped
+  def self.freeze: -> void
+  def self.call: (untyped env) -> untyped
+  def self.logger: (Logger? logger_class, ?params: bool, ?database: bool) -> nil
+  def self.css: (Array[String] filenames) -> untyped
+  def self.js: (Array[String] filenames) -> untyped
+  def self.bundle_static_files: -> void
+  def self.migrate: -> void
+  def self.rollback: (Integer step) -> void
+  def self.development?: -> bool
+  def self.test?: -> bool
+  def self.production?: -> bool
+  def self.default_session_cookie: (?Hash[Symbol, untyped] options) -> Hash[Symbol, untyped]
+end

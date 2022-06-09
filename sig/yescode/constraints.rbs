@@ -1,0 +1,12 @@
+module Yescode
+  module Constraints
+    attr_accessor errors: Hash[Symbol, Array[untyped]]
+
+    def check?: (String | Symbol constraint_name) -> bool
+    def null?: (String | Symbol column_name) -> bool
+    def duplicate?: (String | Symbol column_name) -> bool
+    def error?: (String | Symbol name) -> bool
+    def errors?: -> bool
+    def rescue_constraint_error: (StandardError error) -> Array[untyped]?
+  end
+end

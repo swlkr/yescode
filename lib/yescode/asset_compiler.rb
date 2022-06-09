@@ -6,7 +6,7 @@ module Yescode
       def compile(assets, ext)
         # read contents of each file into array of strings
         combined = StringIO.open do |s|
-          assets[ext].each do |filename|
+          assets.each do |filename|
             source = File.join(".", "app", ext, filename)
             s.puts File.read(source)
           end
@@ -26,7 +26,9 @@ module Yescode
         # returns string of written filename
         File.write(filename, combined)
 
-        name
+        # returns a one element array of
+        # filenames so the view can call .each
+        [name]
       end
     end
   end

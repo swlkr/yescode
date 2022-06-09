@@ -1,0 +1,19 @@
+type query_params = (Hash[untyped, untyped] | Array[untyped] | nil)
+
+module YesQueries
+  def self.included: (class klass) -> void
+
+  module ClassMethods
+    def select: (Symbol name, *query_params params) -> Array[bot]
+    def first: (Symbol name, *query_params params) -> (bot | nil)
+    def first!: (Symbol name, *query_params params) -> bot
+    def value: (Symbol name, *query_params params) -> untyped
+    def query: (Symbol name, ?query_params? params) -> Array[Hash[untyped, untyped]]
+    def queries: () -> Hash[Symbol, Yescode::Query]
+    def sql: () -> String
+    def statement: -> untyped
+  end
+
+  class RecordNotFound < StandardError
+  end
+end

@@ -2,8 +2,7 @@
 
 class YesApp
   class << self
-    attr_accessor :middleware, :assets, :route_class
-    attr_writer :routes
+    attr_accessor :middleware
 
     def use(middleware, *args)
       @middleware ||= []
@@ -22,10 +21,7 @@ class YesApp
         builder.use(m, *args)
       end
 
-      builder.use Yescode::RequestCache::Middleware
-
-      Yescode::Router.assets = @assets
-      builder.run Yescode::Router.new(@routes)
+      builder.run Yescode::Router.new
 
       @app = builder.to_app
     end
@@ -34,7 +30,6 @@ class YesApp
       build_rack_app
       @app.freeze
       @middleware.freeze
-      @assets.freeze
 
       super
     end
@@ -49,33 +44,32 @@ class YesApp
       Yescode::Router.logger = logger_class if params
     end
 
-    def css(arr)
-      @assets ||= Yescode::Assets.new
-      @assets.css(arr)
+    def css(filenames)
+      Yescode::Assets.css ||= []
+      filenames.each do |filename|
+        Yescode::Assets.css << filename
+      end
     end
 
-    def js(arr)
-      @assets ||= Yescode::Assets.new
-      @assets.js(arr)
+    def js(filenames)
+      Yescode::Assets.js ||= []
+      filenames.each do |filename|
+        Yescode::Assets.js << filename
+      end
     end
 
     def bundle_static_files
-      @assets ||= Yescode::Assets.new
-      @assets.compile_assets
-    end
-
-    def migrations(dir)
-      @migrations ||= Dir[dir]
+      Yescode::Assets.compile
     end
 
     def migrate
       Yescode::Database.logger = YesLogger.new($stdout)
-      Yescode::Database.migrate(@migrations || Dir["./db/migrations/*.sql"])
+      Yescode::Database.migrate(Dir["./db/migrations/*.sql"])
     end
 
     def rollback(step)
       Yescode::Database.logger = YesLogger.new($stdout)
-      Yescode::Database.rollback_schema(@migrations || Dir["./db/migrations/*.sql"], step:)
+      Yescode::Database.rollback_schema(Dir["./db/migrations/*.sql"], step: step)
     end
 
     def development?
@@ -90,7 +84,7 @@ class YesApp
       Yescode::Env.production?
     end
 
-    def default_session_cookie
+    def default_session_cookie(options = {})
       {
         path: "/",
         expire_after: 2_592_000,
@@ -98,20 +92,7 @@ class YesApp
         http_only: true,
         same_site: :strict,
         secure: production?
-      }
-    end
-
-    def routes(class_name = :Routes)
-      @route_class = Object.const_get(class_name)
-      @routes ||= @route_class.routes
-    end
-
-    def paths
-      @paths ||= @route_class.paths
-    end
-
-    def path(class_name, method_name, params = {})
-      @route_class.path(class_name, method_name, params)
+      }.merge(options)
     end
   end
 end

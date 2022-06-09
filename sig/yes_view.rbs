@@ -1,0 +1,28 @@
+class YesView
+  extend Yescode::Strings
+  include Yescode::Emote::Helpers
+
+  self.@template_path: String
+  self.@template_name: String
+
+  def self.template_path: -> String
+  def self.template: -> String
+  def self.view: (String template_name) -> void
+  def self.template_name: -> String
+
+  attr_accessor csrf_name: String
+  attr_accessor csrf_value: String
+  attr_accessor session: untyped
+  attr_accessor ajax: bool
+
+  def template: -> String
+  def render: (String | YesView tmpl) -> untyped
+  def csrf_field: -> String
+  def form: (?Hash[(String | Symbol), (String | Symbol | Integer)] params) -> String
+  def _form: -> String
+  def form_link: (String str, Symbol controller_name, Symbol method_name, ?Hash[untyped, untyped] params) -> String
+  def css: -> Array[String]
+  def js: -> Array[String]
+  def path: (Symbol class_name, Symbol method_name, ?Hash[untyped, untyped] params) -> String
+  def fetch: (Symbol class_name, Symbol method_name, ?Hash[untyped, untyped] params) -> String
+end

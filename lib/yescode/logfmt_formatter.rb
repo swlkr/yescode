@@ -4,15 +4,12 @@ module Yescode
   class LogfmtFormatter < ::Logger::Formatter
     def call(severity, datetime, progname, msg)
       timestamp = datetime.strftime('%Y-%m-%d %H:%M:%S.%L')
-
       parts = {
         level: severity.downcase,
         in: progname
       }
-
-      parts.merge!(msg)
-
-      output = "[#{timestamp}] #{parts.reject { |_, v| v.nil? }.map { |k, v| "#{k}=#{v}" }.join(' ')}\n"
+      body = parts.merge(msg).reject { |_, v| v.nil? }.map { |k, v| "#{k}=#{v}" }.join(' ')
+      output = "[#{timestamp}] #{body}\n"
 
       if severity.downcase == "debug"
         blue(output)

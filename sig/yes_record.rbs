@@ -1,0 +1,14 @@
+class YesRecord
+  include Yescode::Schema
+  include Yescode::Constraints
+  include Yescode::Persistence
+  include YesQueries
+
+  def self.table_name: () -> String
+  def self.primary_key_column: () -> String
+  def self.schema: () -> Array[Hash[String, String | Integer]]
+  def self.columns: () -> Array[Yescode::Column]
+  def self.inspect: -> void
+
+  def initialize: (params) -> void
+end

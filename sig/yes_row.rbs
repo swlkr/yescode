@@ -1,0 +1,14 @@
+module YesRow
+  include Yescode::Strings
+  include Yescode::Table
+  include Yescode::Constraints
+
+  def update: (untyped params) -> bool
+  def delete: -> true
+  def saved?: -> untyped
+  def to_param: -> Hash[untyped, untyped]
+
+  private
+  def update_params: (untyped params) -> untyped
+  def update_sql: (untyped keys) -> String
+end

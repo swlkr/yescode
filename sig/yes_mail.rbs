@@ -1,0 +1,24 @@
+class YesMail
+  extend Yescode::Strings
+  include Yescode::Emote::Helpers
+
+  self.@template_path: bot
+  self.@_layout: untyped
+  self.@_from: untyped
+  self.@_html_view: untyped
+  self.@_text_view: untyped
+
+  def self.template_path: -> String
+  def self.layout: (untyped arg) -> untyped
+  def self.from: (untyped arg) -> untyped
+  def self.html_view: (untyped arg) -> untyped
+  def self.text_view: (untyped arg) -> untyped
+  def self.inherited: (untyped subclass) -> untyped
+  def deliver: -> untyped
+  def mail: (?from: nil, ?to: nil, ?subject: nil) -> untyped
+
+  private
+  def template: (String name) -> String
+  def part: (String name) -> nil
+  def new_mail: (from: nil, to: nil, subject: nil) -> untyped
+end

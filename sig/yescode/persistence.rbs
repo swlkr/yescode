@@ -1,0 +1,12 @@
+module Yescode
+  module Persistence[YesRecord]
+    def self.included: (class klass) -> void
+
+    module ClassMethods[YesRecord]
+      include Schema
+      include Constraints
+
+      def self?.insert: (Hash[String | Symbol, String | Integer | Float | nil] params) -> YesRecord
+    end
+  end
+end

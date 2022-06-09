@@ -33,8 +33,11 @@ module Yescode
             next if rows.include?(version)
 
             queries = Queries.queries(filename)
-            execute(queries.find { |name, _| name == :up }[1])
-            execute "insert into yescode_migrations (version) values (?)", version
+            query = queries.find { |name, _| name == :up }&.last
+            next unless query
+
+            execute(query)
+            execute("insert into yescode_migrations (version) values (?)", [version])
           end
         end
       end
@@ -43,19 +46,25 @@ module Yescode
         return unless connection_string
 
         execute "create table if not exists yescode_migrations ( version integer primary key )"
-        rows = execute("select version from yescode_migrations order by version desc limit ?", step).map { |r| r["version"] }
+        rows = execute("select version from yescode_migrations order by version desc limit ?", [step])
+        rows = rows.map { |r| r["version"] }
 
         return if rows.empty?
 
         transaction do
           rows.each do |row|
             filename = filenames.find { |f| version(f) == row }
+            raise StandardError, "Sql file for rollback version #{row} not found" unless filename
+
             version = version(filename)
             next unless rows.include?(version)
 
             queries = Queries.queries(filename)
-            execute(queries.find { |name, _| name == :down }[1])
-            execute "delete from yescode_migrations where version = ?", version
+            query = queries.find { |name, _| name == :down }&.last
+            next unless query
+
+            execute(query)
+            execute("delete from yescode_migrations where version = ?", [version])
           end
         end
       end
@@ -84,21 +93,21 @@ module Yescode
       end
 
       def execute(sql, params = nil)
-        logger&.debug(sql:, params:)
+        logger&.debug(sql: sql, params: params)
 
-        connection.execute sql, params || []
+        connection.execute(sql, params)
       end
 
       def get_first_value(sql, params = nil)
-        logger&.debug(sql:, params:)
+        logger&.debug(sql: sql, params: params)
 
-        connection.get_first_value sql, params || []
+        connection.get_first_value(sql, params)
       end
 
       def get_first_row(sql, params = nil)
-        logger&.debug(sql:, params:)
+        logger&.debug(sql: sql, params: params)
 
-        connection.get_first_row sql, params || []
+        connection.get_first_row(sql, params)
       end
 
       def schema
@@ -109,7 +118,6 @@ module Yescode
             m.name as tableName,
             pti.name as columnName,
             pti.type as columnType,
-            m.sql as sql,
             pti.pk as pk
           from
             sqlite_master m

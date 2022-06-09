@@ -1,0 +1,30 @@
+module Yescode
+  class Generator
+    extend Strings
+
+    VIEW_DIR: String
+    APP_HELP_MESSAGE: String
+    CONTROLLER_HELP_MESSAGE: String
+    MIGRATION_HELP_MESSAGE: String
+    MODEL_HELP_MESSAGE: String
+    MVC_HELP_MESSAGE: String
+    QUERIES_HELP_MESSAGE: String
+    TEMPLATE_HELP_MESSAGE: String
+    TEMPLATES_HELP_MESSAGE: String
+    VIEW_HELP_MESSAGE: String
+    VIEWS_HELP_MESSAGE: String
+    HELP_MESSAGE: String
+
+    def self.generate: (*untyped gen_args) -> void
+    def self.generate_app: (?String dir) -> void
+    def self.generate_mvc: (?String filename) -> void
+    def self.generate_queries: (?String filename) -> void
+    def self.generate_model: (?String filename) -> void
+    def self.generate_controller: (?String filename) -> void
+    def self.generate_view: (?String? filename, ?Array[String] accessors) -> void
+    def self.generate_views: (String | nil prefix) -> void
+    def self.generate_template: (?String? filename) -> void
+    def self.generate_templates: (?String prefix) -> void
+    def self.generate_migration: (?String? filename, ?Array[String] columns) -> void
+  end
+end

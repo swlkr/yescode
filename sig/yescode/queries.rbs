@@ -1,0 +1,7 @@
+module Yescode
+  class Queries
+    def self.name: (String line) -> String?
+    def self.sql: (String line) -> String?
+    def self.queries: (String filename) -> Array[[Symbol, String]]
+  end
+end

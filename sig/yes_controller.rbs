@@ -1,0 +1,31 @@
+type rack_response = [Integer, Hash[String, String], Array[untyped]?]
+
+class YesController
+  self.@before_actions: Array[Symbol]
+  attr_accessor self.before_actions: Array[Symbol]
+
+  @env: untyped
+  @flash: Hash[untyped, untyped]
+  @session: Hash[untyped, untyped]
+
+  def self.before_action: (*Symbol symbols) -> void
+  def self.inherited: (self subclass) -> void
+  def initialize: (untyped env) -> void
+  def flash: -> Hash[untyped, untyped]
+  def session: -> Hash[untyped, untyped]
+  def response: (Integer status, ?String? body, ?Hash[String, String] headers) -> rack_response
+  def ok: (?String? body, ?Hash[String, String] headers) -> rack_response
+  def xml: (?String? body) -> rack_response
+  def json: (?String? body) -> rack_response
+  def redirect: ((String | Symbol) controller_or_url, ?Symbol method_name, ?Hash[untyped, untyped] params) -> rack_response
+  def params: -> untyped
+  def csrf_value: -> String?
+  def csrf_name: -> String?
+  def not_found: -> rack_response
+  def not_found!: -> untyped
+  def server_error: -> rack_response
+  def server_error!: -> untyped
+  def path: (Symbol class_name, Symbol method_name, ?Hash[untyped, untyped] params) -> untyped
+  def render: (untyped view, ?layout: bool) -> rack_response
+  def ajax: -> bool
+end

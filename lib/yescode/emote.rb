@@ -20,64 +20,62 @@
 
 require "cgi/escape"
 
-class Emote
-  PATTERN = /
-    ^[^\S\n]*(%)[^\S\n]*(.*?)(?:\n|\Z) | # Ruby evaluated lines
-    (<\?)\s+(.*?)\s+\?>                | # Multiline Ruby blocks
-    (\$\{)(.*?)\}                      | # Ruby evaluated to strings unescaped
-    (\{\{)(.*?)\}\}                      # Ruby evaluated to strings html escaped
-  /mx
+module Yescode
+  class Emote
+    PATTERN = /
+      ^[^\S\n]*(%)[^\S\n]*(.*?)(?:\n|\Z) | # Ruby evaluated lines
+      (<\?)\s+(.*?)\s+\?>                | # Multiline Ruby blocks
+      (\$\{)(.*?)\}                      | # Ruby evaluated to strings unescaped
+      (\{\{)(.*?)\}\}                      # Ruby evaluated to strings html escaped
+    /mx
 
-  def self.h(value)
-    CGI.escapeHTML(value.to_s)
-  end
-
-  def self.src(template, vars = [])
-    terms = template.split(PATTERN)
-
-    code = "proc do |params, __o| params ||= {}; __o ||= '';"
-
-    vars.each do |var|
-      code << format("%<val>s = params[%<key>p];", { val: var, key: var })
+    def self.h(value)
+      CGI.escapeHTML(value.to_s)
     end
 
-    while (term = terms.shift)
-      code << case term
-              when "<?"
-                "#{terms.shift}\n"
-              when "%"
-                "#{terms.shift}\n"
-              when "${"
-                "__o << (#{terms.shift}).to_s\n"
-              when "{{"
-                "__o << Emote.h(#{terms.shift}).to_s\n"
-              else
-                "__o << #{term.dump}\n"
-              end
+    def self.src(template)
+      terms = template.split(PATTERN)
+
+      code = "proc do |__o| __o ||= '';"
+
+      while (term = terms.shift)
+        code << case term
+                when "<?"
+                  "#{terms.shift}\n"
+                when "%"
+                  "#{terms.shift}\n"
+                when "${"
+                  "__o << (#{terms.shift}).to_s\n"
+                when "{{"
+                  "__o << Emote.h(#{terms.shift}).to_s\n"
+                else
+                  "__o << #{term.dump}\n"
+                end
+      end
+
+      code << "__o; end"
     end
 
-    code << "__o; end"
-  end
-
-  def self.parse(template, context = self, vars = [], name = "template")
-    context.instance_eval(src(template, vars), name, -1)
-  end
-
-  module Helpers
-    def emote(file, params = {}, context = self)
-      file_cache[file] ||= File.read(file)
-      key = params.hash + context.hash
-      emote_cache[key] ||= Emote.parse(file_cache[file], context, params.keys, file)
-
-      emote_cache[key][params]
+    def self.parse(template, context, name)
+      context.instance_eval(src(template), name, -1)
     end
 
-    def emote_cache
-      Thread.current[:_emote_cache] ||= {}
-    end
+    module Helpers
+      def emote(filename, context)
+        key = filename.hash + context.hash
+        file_cache[filename] ||= File.read(filename)
+        emote_cache[key] ||= Emote.parse(file_cache[filename], context, filename)
 
-    def file_cache
-      Thread.current[:_file_cache] ||= {}
+        emote_cache[key][]
+      end
+
+      def emote_cache
+        Thread.current[:_emote_cache] ||= {}
+      end
+
+      def file_cache
+        Thread.current[:_file_cache] ||= {}
+      end
     end
   end
 end

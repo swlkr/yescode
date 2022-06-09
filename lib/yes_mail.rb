@@ -6,7 +6,7 @@ end
 
 class YesMail
   extend Yescode::Strings
-  include Emote::Helpers
+  include Yescode::Emote::Helpers
 
   class << self
     attr_writer :template_path
@@ -46,7 +46,7 @@ class YesMail
   end
 
   def mail(from: nil, to: nil, subject: nil)
-    new_mail(from:, to:, subject:).deliver
+    new_mail(from: from, to: to, subject: subject).deliver
   end
 
   private
@@ -62,9 +62,9 @@ class YesMail
     return unless File.exist?(layout) || File.exist?(content)
 
     if File.exist?(layout)
-      emote(layout, { content: })
+      emote(layout, self)
     else
-      emote(content)
+      emote(content, self)
     end
   end
 

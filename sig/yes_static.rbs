@@ -1,0 +1,7 @@
+class YesStatic
+  @app: untyped
+  @root: String
+
+  def initialize: (untyped app, ?Hash[Symbol, untyped] options) -> void
+  def call: (Hash[untyped, untyped] env) -> [Integer, Hash[String, untyped], Array[untyped] | File]
+end

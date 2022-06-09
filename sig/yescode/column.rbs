@@ -1,0 +1,9 @@
+module Yescode
+  class Column
+    attr_accessor name: String
+    attr_accessor type: String
+    attr_accessor primary_key: bool
+
+    def initialize: (String name, String type, bool primary_key) -> void
+  end
+end

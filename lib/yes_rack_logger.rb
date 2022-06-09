@@ -50,10 +50,10 @@ class YesRackLogger
     @logger&.info(
       msg: "Response finished",
       **common_parts(env),
-      content_length:,
-      status:,
-      duration:,
-      allocations:
+      content_length: content_length,
+      status: status,
+      duration: duration,
+      allocations: allocations
     )
   end
 end

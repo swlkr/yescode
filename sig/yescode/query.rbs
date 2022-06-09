@@ -1,0 +1,9 @@
+module Yescode
+  class Query
+    attr_accessor name: Symbol
+    attr_accessor sql: String
+    attr_accessor statement: untyped
+
+    def initialize: (Symbol name, String sql) -> void
+  end
+end

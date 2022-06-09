@@ -1,0 +1,10 @@
+module Yescode
+  module Table
+    include Strings
+
+    def self?.primary_key_column: -> String
+    def self?.schema: -> Array[Hash[untyped, untyped]]
+    def self?.columns: -> Array[Column]
+    def self?.inspect: -> String
+  end
+end
