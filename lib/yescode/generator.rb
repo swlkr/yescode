@@ -529,8 +529,8 @@ module Yescode
         filepath = File.join(".", "app", "models", "#{filename}.rb")
         class_name = pascal_case(filename)
         contents = <<~RB
-        class #{class_name} < AppRecord
-          queries "#{filename}.sql"
+        class #{class_name} < YesRecord
+          define_queries "#{filename}.sql"
         end
         RB
         File.write(filepath, contents)
@@ -548,7 +548,7 @@ module Yescode
         class_name = pascal_case(filename)
         var_name = filename
         route = <<~RB
-        class #{class_name} < AppController
+        class #{class_name} < YesController
           def index
             all = #{class_name}.all
 
