@@ -1,0 +1,8 @@
+module Yescode
+  class Assets
+    attr_accessor self.css: Array[String]
+    attr_accessor self.js: Array[String]
+
+    def self.compile: -> void
+  end
+end
