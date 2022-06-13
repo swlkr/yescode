@@ -29,7 +29,7 @@ class YesView
     end
   end
 
-  attr_accessor :csrf_name, :csrf_value, :assets, :session, :ajax
+  attr_accessor :csrf_name, :csrf_value, :session, :ajax
 
   def template
     self.class.template
@@ -41,7 +41,6 @@ class YesView
       tmpl.csrf_name = csrf_name
       tmpl.csrf_value = csrf_value
       tmpl.session = session
-      tmpl.assets = assets
       tmpl.ajax = ajax
       emote(tmpl.template, params, tmpl)
     when String
@@ -78,15 +77,11 @@ class YesView
   end
 
   def css
-    return [] unless assets
-
-    assets["css"].map { |filename| "/css/#{filename}" }
+    Yescode::Assets.css&.map { |filename| "/css/#{filename}" }
   end
 
   def js
-    return [] unless assets
-
-    assets["js"].map { |filename| "/js/#{filename}" }
+    Yescode::Assets.js&.map { |filename| "/js/#{filename}" }
   end
 
   def path(class_name, method_name, params = {})

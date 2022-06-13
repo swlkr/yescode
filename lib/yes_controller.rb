@@ -1,6 +1,6 @@
 class YesController
   class << self
-    attr_accessor :before_actions, :assets
+    attr_accessor :before_actions
 
     def before_action(*symbols)
       @before_actions = symbols
@@ -83,7 +83,6 @@ class YesController
   def render(view, layout: true)
     view.csrf_name = csrf_name
     view.csrf_value = csrf_value
-    view.assets = self.class.assets&.to_h || {}
     view.session = session
     view.ajax = @env.key?("HTTP_YES_AJAX")
     content = view.render(view.template)

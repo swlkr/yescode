@@ -2,7 +2,7 @@
 
 class YesApp
   class << self
-    attr_accessor :middleware, :assets, :route_class
+    attr_accessor :middleware, :route_class
     attr_writer :routes
 
     def use(middleware, *args)
@@ -23,8 +23,6 @@ class YesApp
       end
 
       builder.use Yescode::RequestCache::Middleware
-
-      Yescode::Router.assets = @assets
       builder.run Yescode::Router.new(@routes)
 
       @app = builder.to_app
@@ -34,7 +32,6 @@ class YesApp
       build_rack_app
       @app.freeze
       @middleware.freeze
-      @assets.freeze
 
       super
     end
@@ -49,19 +46,22 @@ class YesApp
       Yescode::Router.logger = logger_class if params
     end
 
-    def css(arr)
-      @assets ||= Yescode::Assets.new
-      @assets.css(arr)
+    def css(filenames)
+      Yescode::Assets.css ||= []
+      filenames.each do |filename|
+        Yescode::Assets.css << filename
+      end
     end
 
-    def js(arr)
-      @assets ||= Yescode::Assets.new
-      @assets.js(arr)
+    def js(filenames)
+      Yescode::Assets.js ||= []
+      filenames.each do |filename|
+        Yescode::Assets.js << filename
+      end
     end
 
     def bundle_static_files
-      @assets ||= Yescode::Assets.new
-      @assets.compile_assets
+      Yescode::Assets.compile
     end
 
     def migrations(dir)

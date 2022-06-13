@@ -2,29 +2,13 @@
 
 module Yescode
   class Assets
-    def initialize
-      @assets_path = File.join(".", "app")
-      @assets = Hash.new { |hash, key| hash[key] = [] }
-    end
+    class << self
+      attr_accessor :css, :js
 
-    def css(filenames = [])
-      @assets["css"] = filenames
-    end
-
-    def js(filenames = [])
-      @assets["js"] = filenames
-    end
-
-    def compile_assets
-      css = AssetCompiler.compile(@assets, "css") unless @assets["css"].empty?
-      js = AssetCompiler.compile(@assets, "js") unless @assets["js"].empty?
-
-      @assets["css"] = [css]
-      @assets["js"] = [js]
-    end
-
-    def to_h
-      @assets
+      def compile
+        @css = AssetCompiler.compile(@css, "css") unless @css&.empty?
+        @js = AssetCompiler.compile(@js, "js") unless @js&.empty?
+      end
     end
   end
 end
