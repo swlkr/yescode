@@ -16,7 +16,7 @@ module Yescode
       route, params = find_route(request.request_method || "", request.path_info || "")
       _, class_name, method = route
 
-      raise(RouteUndefined, "#{method} is not defined in class #{class_name}") unless route_defined?(class_name, method)
+      raise RouteUndefined, "#{request.request_method} #{request.path_info} is not defined" unless route_defined?(class_name, method)
 
       env["params"] = params&.merge(request.params)&.transform_keys(&:to_sym) || {}
       klass = Object.const_get(class_name) unless class_name.nil?
@@ -35,7 +35,7 @@ module Yescode
       else
         response
       end
-    rescue NotFoundError
+    rescue NotFoundError, RouteUndefined
       raise if Env.development?
 
       [404, { "content-type" => "text/html" }, File.open("public/404.html")]

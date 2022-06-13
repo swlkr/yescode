@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Breaking Changes
 
 - Drop dependency on Rack::Csrf and replace with YesCsrf (Change `Rack::Csrf` in `app` to `YesCsrf`)
+- Delete routes class method from `App`
 
 ### Features
 

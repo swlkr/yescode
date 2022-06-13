@@ -2,8 +2,7 @@
 
 class YesApp
   class << self
-    attr_accessor :middleware, :route_class
-    attr_writer :routes
+    attr_accessor :middleware
 
     def use(middleware, *args)
       @middleware ||= []
@@ -23,7 +22,7 @@ class YesApp
       end
 
       builder.use Yescode::RequestCache::Middleware
-      builder.run Yescode::Router.new(@routes)
+      builder.run Yescode::Router.new
 
       @app = builder.to_app
     end
@@ -99,19 +98,6 @@ class YesApp
         same_site: :strict,
         secure: production?
       }.merge(options)
-    end
-
-    def routes(class_name = :Routes)
-      @route_class = Object.const_get(class_name)
-      @routes ||= @route_class.routes
-    end
-
-    def paths
-      @paths ||= @route_class.paths
-    end
-
-    def path(class_name, method_name, params = {})
-      @route_class.path(class_name, method_name, params)
     end
   end
 end

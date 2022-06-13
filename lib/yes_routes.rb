@@ -14,7 +14,7 @@ class YesRoutes
 
     def path(class_name, method_name, params = {})
       path_string = paths[[class_name, method_name]]
-      raise(Yescode::RouteUndefined, "#{method_name} is not defined in class #{class_name}") unless path_string
+      raise Yescode::RouteUndefined, "#{method_name} is not defined in class #{class_name}" unless path_string
 
       params = case params
                when nil

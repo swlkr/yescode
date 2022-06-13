@@ -85,7 +85,7 @@ class YesView
   end
 
   def path(class_name, method_name, params = {})
-    Object.const_get(:App).path(class_name, method_name, params)
+    YesRoutes.path(class_name, method_name, params)
   end
 
   def fetch(class_name, method_name, params = {})
