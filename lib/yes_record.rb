@@ -11,6 +11,34 @@ class YesRecord
   class << self
     attr_writer :table_name
 
+    def filepath(filename)
+      File.join(".", "app", "models", filename)
+    end
+
+    def define_queries(filename)
+      Yescode::Queries.queries(filepath(filename)).each do |name, sql, result|
+        statement = Yescode::Database.connection.prepare(sql)
+
+        define_singleton_method name do |*params|
+          Yescode::Database.logger&.debug(sql: sql, params: params)
+          rows = statement.execute(*params).to_a
+
+          case result
+          when "first"
+            new(rows.first)
+          when "first!"
+            raise RecordNotFound unless rows.first
+
+            new(rows.first)
+          when "function"
+            rows.first&.values&.first
+          else
+            rows.map { |r| new(r) }
+          end
+        end
+      end
+    end
+
     def table_name
       @table_name || filename
     end
@@ -83,7 +111,7 @@ class YesRecord
       raise QueryNotFound, "Can't find a query in #{@query_filename} with name #{name}" unless query
 
       query.statement ||= Yescode::Database.connection.prepare(query.sql)
-      Yescode::Database.logger&.debug(cached: !request_cache.dig(name, key).nil?, sql: query.sql, params:)
+      Yescode::Database.logger&.debug(cached: !request_cache.dig(name, key).nil?, sql: query.sql, params: params)
 
       request_cache[name][key] ||= query.statement.execute(*params).to_a
     end
@@ -108,16 +136,8 @@ class YesRecord
       rows.map { |r| new(r) }
     end
 
-    def all(name = :all, *params)
-      select(name, *params)
-    end
-
     def value(name, *params)
       execute_query(name, *params).first&.values&.first
-    end
-
-    def count(name = :count, *params)
-      value(name, *params)
     end
 
     def values(keys)
