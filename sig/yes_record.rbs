@@ -1,0 +1,72 @@
+# TypeProf 0.21.2
+
+# Classes
+class YesRecord
+  include Yescode::Strings
+
+  self.@table_name: untyped
+  self.@schema: untyped
+  self.@columns: untyped
+  self.@column_names: untyped
+  self.@primary_key_column: untyped
+  self.@query_filename: untyped
+  self.@queries: Hash[untyped, untyped]
+  @to_h: untyped
+
+  def self.table_name: -> String
+  def self.table: (String name) -> String
+  def self.schema: -> Array[String]
+  def self.columns: -> Array[Column]
+  def self.filepath: -> String
+  def self.column_names: -> Array[String]
+  def self.primary_key_column: -> String
+  def self.inspect: -> void
+  def self.connect: -> singleton(YesRecord)
+  def self.queries: (String filename) -> Hash[Symbol, Query]
+  def self.values: (untyped keys) -> String
+  def self.insert_sql: (untyped keys) -> String
+  def self.insert: (untyped params) -> YesRecord?
+  def self.insert_all: -> untyped
+  def self.update_all: -> untyped
+  def self.delete_all: -> untyped
+  def self.define_queries: (String filename) -> void
+
+  attr_accessor errors: {check: Array[untyped], null: Array[untyped], unique: Array[untyped]}
+
+  def initialize: (?Hash[untyped, untyped] args) -> void
+  def load: (?Hash[untyped, untyped] args) -> Hash[untyped, untyped]
+  def pk_column: -> untyped
+  def pk: -> untyped
+  def pk_param: -> Hash[untyped, untyped]
+  def update_params: (untyped params) -> untyped
+  def update_sql: (untyped keys) -> String
+  def update: (untyped params) -> bool
+  def delete: -> true
+  def check?: (untyped constraint_name) -> bool
+  def null?: (untyped column_name) -> bool
+  def duplicate?: (untyped column_name) -> bool
+  def error?: (untyped name) -> bool
+  def errors?: -> bool
+  def rescue_constraint_error: (nil error) -> Array[untyped]?
+  def to_h: -> untyped
+  def saved?: -> untyped
+  def to_param: -> untyped
+
+  class QueryNotFound < StandardError
+  end
+
+  class RecordNotFound < StandardError
+  end
+
+  class Column < Struct[untyped]
+    attr_accessor name: String
+    attr_accessor type: String
+    attr_accessor primary_key: String
+  end
+
+  class Query < Struct[untyped]
+    attr_accessor name: String
+    attr_accessor sql: String
+    attr_accessor statement: untyped
+  end
+end

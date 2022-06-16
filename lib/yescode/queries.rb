@@ -10,7 +10,7 @@ module Yescode
       end
 
       def result(line)
-        line.match(/->\s+(function|first!?)$/).to_a.last
+        line.match(/->\s*(\S+)$/).to_a.last
       end
 
       def queries(filename)

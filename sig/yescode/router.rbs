@@ -2,9 +2,6 @@ module Yescode
   class RouteNotFound < StandardError
   end
 
-  class RouteUndefined < StandardError
-  end
-
   class NotFoundError < StandardError
   end
 

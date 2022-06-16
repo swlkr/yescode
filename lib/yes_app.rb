@@ -15,13 +15,10 @@ class YesApp
 
     def build_rack_app
       builder = Rack::Builder.new
-
       middleware&.each do |m, args|
         m.logger = @logger if m.respond_to?(:logger=)
         builder.use(m, *args)
       end
-
-      builder.use Yescode::RequestCache::Middleware
       builder.run Yescode::Router.new
 
       @app = builder.to_app

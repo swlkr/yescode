@@ -1,0 +1,11 @@
+module Yescode
+  module Strings
+    SNAKE_CASE_REGEX: Regexp
+
+    def snake_case: (String str) -> String
+    def camel_case: (String str) -> String
+    def pascal_case: (String str) -> untyped
+    def class_name: -> String
+    def filename: -> String
+  end
+end

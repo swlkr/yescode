@@ -3,10 +3,8 @@
 class YesRecord
   extend Yescode::Strings
 
-  class QueryNotFound < StandardError; end
   class RecordNotFound < StandardError; end
   Column = Struct.new("Column", :name, :type, :primary_key)
-  Query = Struct.new("Query", :name, :sql, :statement)
 
   class << self
     attr_writer :table_name
@@ -24,14 +22,22 @@ class YesRecord
           rows = statement.execute(*params).to_a
 
           case result
-          when "first"
-            new(rows.first)
-          when "first!"
+          when class_name
+            new(rows.first) unless rows.empty?
+          when "#{class_name}!"
             raise RecordNotFound unless rows.first
 
             new(rows.first)
-          when "function"
-            rows.first&.values&.first
+          when /^Integer$/
+            rows.first&.values&.first&.to_i
+          when /^Integer\??$/
+            value = rows.first&.values&.first
+            value&.to_i if value
+          when /^Float$/
+            rows.first&.values&.first&.to_f
+          when /^Float\??$/
+            value = rows.first&.values&.first
+            value&.to_f if value
           else
             rows.map { |r| new(r) }
           end
@@ -83,63 +89,6 @@ class YesRecord
       self
     end
 
-    def queries(filename)
-      @query_filename = filename
-      filepath = File.join(".", "app", "models", filename)
-      queries = Yescode::Queries.queries(filepath)
-      @queries = {}
-      queries.each do |name, sql|
-        @queries[name] = Query.new(name, sql)
-      end
-
-      @queries
-    end
-
-    def request_cache
-      Yescode::RequestCache.store[table_name] ||= {}
-    end
-
-    def clear_request_cache!
-      Yescode::RequestCache.store[table_name] = nil
-    end
-
-    def execute_query(name, *params)
-      query = @queries[name]
-      key = params
-      request_cache[name] ||= { key => nil }
-
-      raise QueryNotFound, "Can't find a query in #{@query_filename} with name #{name}" unless query
-
-      query.statement ||= Yescode::Database.connection.prepare(query.sql)
-      Yescode::Database.logger&.debug(cached: !request_cache.dig(name, key).nil?, sql: query.sql, params: params)
-
-      request_cache[name][key] ||= query.statement.execute(*params).to_a
-    end
-
-    def first(name, *params)
-      row = execute_query(name, *params).first
-
-      new(row) if row
-    end
-
-    def first!(name, *params)
-      row = execute_query(name, *params).first
-
-      raise RecordNotFound unless row
-
-      new(row) if row
-    end
-
-    def select(name, *params)
-      rows = execute_query(name, *params)
-
-      rows.map { |r| new(r) }
-    end
-
-    def value(name, *params)
-      execute_query(name, *params).first&.values&.first
-    end
-
     def values(keys)
       if keys.empty?
         "default values"
@@ -158,8 +107,6 @@ class YesRecord
       sql = insert_sql(params.keys)
       inserted = Yescode::Database.get_first_row(sql, params)
 
-      clear_request_cache!
-
       new(inserted)
     rescue SQLite3::ConstraintException => e
       Yescode::Database.logger.error(msg: e.message)
@@ -170,8 +117,16 @@ class YesRecord
       record
     end
 
-    def insert_all
-      # TODO: do it
+    def insert_all(records)
+      return 0 if records.nil? || records&.compact&.empty?
+
+      columns = records&.first&.keys&.compact&.map(&:to_sym)
+      return 0 if columns.nil? || columns.empty?
+
+      values = records.size.times.map { "(#{columns.map { '?' }.join(', ')})" }.join(", ")
+      sql = "insert into '#{table_name}' (#{columns.join(', ')}) values #{values}"
+
+      Yescode::Database.get_first_value(sql, records.map(&:values)).to_i
     end
 
     def update_all
@@ -179,10 +134,7 @@ class YesRecord
     end
 
     def delete_all
-      result = Yescode::Database.execute "delete from #{table_name}"
-      clear_request_cache!
-
-      result
+      Yescode::Database.get_first_value("delete from #{table_name}").to_i
     end
   end
 
@@ -230,7 +182,6 @@ class YesRecord
     sql = update_sql(update_params.keys)
     update_params.merge!(pk_param)
     updated = Yescode::Database.get_first_row(sql, update_params)
-    self.class.clear_request_cache!
     load(updated)
 
     true
@@ -244,7 +195,6 @@ class YesRecord
   def delete
     sql = "delete from #{self.class.table_name} where #{pk_column} = ?"
     Yescode::Database.execute(sql, pk)
-    self.class.clear_request_cache!
 
     true
   end

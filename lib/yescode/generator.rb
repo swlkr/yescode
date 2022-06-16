@@ -489,31 +489,46 @@ module Yescode
         -- name: all
         select *
         from #{filename}
+        order by #{filename}_id asc
 
-        -- name: count
-        -- fn: value
+        -- name: count -> function
         select count(*)
         from #{filename}
 
-        -- name: by_#{filename}_id
+        -- name: by_#{filename}_id -> first
         select *
         from #{filename}
         where #{filename}_id = ?
+        limit 1
+
+        -- name: find -> first!
+        select *
+        from #{filename}
+        where #{filename}_id = ?
+        limit 1
+
+        -- name: first -> first
+        select *
+        from #{filename}
+        order by #{filename}_id asc
+        limit 1
+
+        -- name: last -> first
+        select *
+        from #{filename}
+        order by #{filename}_id desc
+        limit 1
 
         -- name: latest
         select *
         from #{filename}
         order by created_at desc
+        limit 30
 
         -- name: oldest
         select *
         from #{filename}
         order by created_at
-
-        -- name: latest_with_limit
-        select *
-        from #{filename}
-        order by created_at desc
         limit 30
         SQL
 
@@ -535,7 +550,6 @@ module Yescode
         RB
         File.write(filepath, contents)
 
-        generate_migration("create_table_#{filename}")
         generate_queries(filename)
       end
 
