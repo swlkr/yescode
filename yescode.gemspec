@@ -33,6 +33,7 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "minitest", "~> 5.14"
 
+  spec.add_dependency "erubi", "1.10.0"
   spec.add_dependency "mail", "2.7.1"
   spec.add_dependency "net-smtp", "0.3.1"
   spec.add_dependency "rack", "2.2.3"
