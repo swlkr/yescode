@@ -17,6 +17,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Components declare `get` and `post` methods
 - `queries` dropped in `YesRecord`
 - Query caching is also dropped
+- Use `.html.erb` instead of `.emote`
+- Delete every class method in `YesRoutes` except for `route`
 
 ### Features
 
@@ -26,6 +28,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Add `define_queries` method to define the sql queries as singleton methods
 - Make `define_queries` the default in generators
 - Components combine controllers and view classes
+- Erb via erubi
+
+### Examples
+
+A quick example of how everything fits together
+
+```rb
+# app/components/home.rb
+class Home
+  attr_accessor :message
+
+  def get
+    @message = "Hello world"
+  end
+end
+
+class Routes < YesRoutes
+  route "/", Home
+end
+```
+
+in `./app/components/home.html.erb`:
+
+```erb
+<h1>
+  <%= message %>
+</h1>
+```
 
 # [22.05.24]
 
