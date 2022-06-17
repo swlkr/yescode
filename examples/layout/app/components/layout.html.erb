@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title><%= title %></title>
+    <meta charset="utf-8" />
+    <meta name="title" description="<%= title %>" />
+    <meta name="description" description="<%= description %>" />
+    % css.each do |href|
+      <link href=<%= href %> rel="stylesheet"></link>
+    % end
+    % js.each do |src|
+      <script src=<%= src %> type="application/javascript" defer></script>
+    % end
+  </head>
+  <body>
+    <nav>
+      <a href=<%= Home.path %>>Home</a>
+    </nav>
+    <%== body %>
+  </body>
+</html>
