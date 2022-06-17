@@ -61,7 +61,7 @@ class YesComponent
     body ||= emote(self.class.template_name)
     body = emote(self.class.superclass.template_name, { component: body }) if layout && !yes_frame?
 
-    ok(body)
+    ok(body, { "content-type" => "text/html; charset=utf-8" })
   end
 
   def render(klass)
