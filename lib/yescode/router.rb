@@ -20,7 +20,7 @@ module Yescode
         component.send(before_action)
       end
       self.class.logger&.info(msg: "Request dispatched", component: component.class.to_s, params: env["params"])
-      component.dispatch
+      component.call
       raise NotFoundError unless component.response
 
       component.response

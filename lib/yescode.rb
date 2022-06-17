@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "erubi"
 require "digest"
 require "logger"
 require "net/smtp"
@@ -9,7 +10,6 @@ require "stringio"
 require "sqlite3"
 
 require_relative "./yescode/version"
-require_relative "./yescode/emote"
 require_relative "./yescode/strings"
 require_relative "./yescode/env"
 require_relative "./yescode/logfmt_formatter"
@@ -25,6 +25,7 @@ require_relative "./yes_static"
 require_relative "./yes_logger"
 require_relative "./yes_rack_logger"
 require_relative "./yes_routes"
+require_relative "./yes_tag"
 require_relative "./yes_component"
 require_relative "./yes_record"
 require_relative "./yes_mail"
@@ -34,7 +35,7 @@ def require_all(paths)
   paths.each do |path|
     if path.end_with?("*")
       Dir[path].sort.each do |f|
-        next unless f.end_with?("rb")
+        next unless f.end_with?(".rb")
 
         require f
       end

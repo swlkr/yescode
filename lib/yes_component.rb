@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class YesComponent
-  include Emote::Helpers
   extend Yescode::Strings
 
   class << self
@@ -17,12 +16,28 @@ class YesComponent
     end
 
     def template_name
-      name = @template || "#{filename}.emote"
+      name = @template || "#{filename}.html.erb"
       File.join(".", "app", "components", name)
     end
 
     def template(name)
       @template = name
+    end
+
+    def template_file
+      @template_file ||= File.read(template_name)
+    end
+
+    def compiled_template
+      if Yescode::Env.development?
+        Erubi::Engine.new(template_file, escape: true, freeze: true).src
+      else
+        @compiled_template ||= Erubi::Engine.new(template_file, escape: true, freeze: true).src
+      end
+    end
+
+    def path(params = {})
+      YesRoutes.path(self, params)
     end
   end
 
@@ -58,18 +73,13 @@ class YesComponent
   end
 
   def html(body = nil, layout: true)
-    body ||= emote(self.class.template_name)
-    body = emote(self.class.superclass.template_name, { component: body }) if layout && !yes_frame?
+    body ||= instance_eval(self.class.compiled_template)
+    if layout && !yes_frame?
+      @body = body
+      body = instance_eval(self.class.superclass.compiled_template)
+    end
 
     ok(body, { "content-type" => "text/html; charset=utf-8" })
-  end
-
-  def render(klass)
-    component = klass.new(@env)
-    component.get
-    component.html(nil, layout: false) unless component.body
-
-    component.body
   end
 
   def redirect(component_or_url, params = {})
@@ -99,38 +109,8 @@ class YesComponent
     raise ServerError
   end
 
-  def path(class_name, params = {})
-    YesRoutes.path(class_name, params)
-  end
-
   def yes_frame?
     @env.key?("HTTP_YES_FRAME")
-  end
-
-  def csrf_field
-    "<input type=\"hidden\" name=\"#{YesCsrf::FIELD}\" value=\"#{csrf_value}\" />"
-  end
-
-  def form(params = {})
-    params = { method: "post" }.merge(params)
-    attr_string = params.map { |k, v| "#{k}=\"#{v}\"" }.join(" ")
-
-    <<~HTML
-      <form #{attr_string}>
-        #{csrf_field}
-    HTML
-  end
-
-  def _form
-    "</form>"
-  end
-
-  def form_link(str, component_class, params = {})
-    <<~HTML
-      #{form(action: path(component_class, params))}
-        <input type="submit" value="#{str}" />
-      #{_form}
-    HTML
   end
 
   def css
@@ -141,7 +121,23 @@ class YesComponent
     Yescode::Assets.js&.map { |filename| "/js/#{filename}" }
   end
 
-  def dispatch
+  def render(klass)
+    component = klass.new(@env)
+    component.get
+    component.html(nil, layout: false) unless component.body
+
+    component.body
+  end
+
+  def view(klass)
+    component = klass.new(@env)
+    component.get
+    component.html(nil, layout: true) unless component.body
+
+    component.body
+  end
+
+  def call
     case request_method
     when "GET"
       get
@@ -154,9 +150,17 @@ class YesComponent
     html unless response
   end
 
+  def tag
+    @tag ||= YesTag.new
+  end
+
+  def get; end
+
+  def post; end
+
   private
 
   def request_method
-    @env["REQUEST_METHOD"]
+    @env[Rack::REQUEST_METHOD]
   end
 end
