@@ -18,7 +18,7 @@ class YesComponent
 
     def template_name
       name = @template || "#{filename}.emote"
-      File.join(".", "app", "templates", name)
+      File.join(".", "app", "components", name)
     end
 
     def template(name)

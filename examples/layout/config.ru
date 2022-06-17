@@ -4,18 +4,12 @@ require "yescode"
 # it's supposed to be a simpler
 # alternative to zeitwerk
 require_all %w[
-  ./app/views/layout
-  ./app/views/*
+  ./app/components/layout
+  ./app/components/*
 ]
 
-class Home < YesController
-  def index
-    HomeIndex.new
-  end
-end
-
 class Routes < YesRoutes
-  get "/", :Home, :index
+  route "/", Home
 end
 
 class App < YesApp
@@ -28,8 +22,6 @@ class App < YesApp
   use Rack::Head
   use Rack::ContentLength
   use Rack::ContentType
-
-  routes :Routes
 end
 
 run App

@@ -14,8 +14,8 @@
   </head>
   <body>
     <nav>
-      <a href={{path :Home, :index}}>Home</a>
+      <a href={{path Home}}>Home</a>
     </nav>
-    ${content}
+    ${component}
   </body>
 </html>

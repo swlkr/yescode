@@ -1,17 +1,11 @@
 require "yescode"
 
-class HomeIndex < YesView
-  view "home_index.emote"
-end
-
-class Home < YesController
-  def index
-    HomeIndex.new
-  end
+class Home < YesComponent
+  def get; end
 end
 
 class Routes < YesRoutes
-  get "/", :Home, :index
+  route "/", Home
 end
 
 class App < YesApp
@@ -24,8 +18,6 @@ class App < YesApp
   use Rack::Head
   use Rack::ContentLength
   use Rack::ContentType
-
-  routes :Routes
 end
 
 run App

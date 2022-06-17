@@ -1,6 +1,4 @@
-class Layout < YesView
-  view "layout.emote"
-
+class Layout < YesComponent
   def title
     "yescode"
   end
