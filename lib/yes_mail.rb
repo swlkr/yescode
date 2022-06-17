@@ -6,11 +6,10 @@ end
 
 class YesMail
   extend Yescode::Strings
-  include Emote::Helpers
 
   class << self
     attr_writer :template_path
-    attr_accessor :_from, :_layout, :_html_view, :_text_view
+    attr_accessor :_from, :_layout, :_html_view, :_text_view, :content
 
     def template_path
       @template_path || File.join(".", "app", "emails")
@@ -56,15 +55,15 @@ class YesMail
   end
 
   def part(name)
-    content = template(name)
+    @content = template(name)
     layout = template(self.class._layout || "layout")
 
-    return unless File.exist?(layout) || File.exist?(content)
+    return unless File.exist?(layout) || File.exist?(@content)
 
     if File.exist?(layout)
-      emote(layout, { content: })
+      instance_eval(Erubi::Engine.new(layout, escape: true, freeze: true).src)
     else
-      emote(content)
+      instance_eval(Erubi::Engine.new(@content, escape: true, freeze: true).src)
     end
   end
 
@@ -76,8 +75,8 @@ class YesMail
 
     filename = self.class.filename
 
-    text = part(self.class._text_view || "#{filename}.text.emote")
-    html = part(self.class._html_view || "#{filename}.html.emote")
+    text = part(self.class._text_view || "#{filename}.text.erb")
+    html = part(self.class._html_view || "#{filename}.html.erb")
 
     if text
       mail.text_part = Mail::Part.new do
