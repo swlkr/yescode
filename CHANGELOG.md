@@ -11,6 +11,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Drop dependency on Rack::Csrf and replace with YesCsrf (Change `Rack::Csrf` in `app` to `YesCsrf`)
 - Delete routes class method from `App`
 - `count` and `all` methods no longer exist on `YesRecord` as methods
+- Combine controllers and views into `YesComponent`
+- Change routing to route to components
+- Change render to render components
+- Components declare `get` and `post` methods
+- `queries` dropped in `YesRecord`
+- Query caching is also dropped
 
 ### Features
 
@@ -19,6 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Add options to `default_session_cookie`
 - Add `define_queries` method to define the sql queries as singleton methods
 - Make `define_queries` the default in generators
+- Components combine controllers and view classes
 
 # [22.05.24]
 
