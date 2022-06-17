@@ -1,7 +1,4 @@
 module Yescode
-  class RouteNotFound < StandardError
-  end
-
   class NotFoundError < StandardError
   end
 
@@ -16,7 +13,6 @@ module Yescode
 
     private
 
-    def find_route: (String request_method, String path_info) -> [([String, Symbol, Symbol] | nil), (Hash[String, String | nil] | nil)]
-    def route_defined?: (Symbol? class_name, Symbol? method_name) -> bool
+    def find_route: (String path_info) -> [Class | Symbol | nil, Hash[untyped, untyped] | nil]
   end
 end

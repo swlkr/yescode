@@ -7,46 +7,38 @@ module Yescode
     end
 
     def test_find_route_with_no_params
-      YesRoutes.routes = {
-        "GET" => [["/", :Home, :index]]
-      }
+      YesRoutes.routes = [["/", :Home, :index]]
 
-      actual = @router.send(:find_route, "GET", "/")
-      expected = [["/", :Home, :index], {}]
+      actual = @router.send(:find_route, "/")
+      expected = [:Home, {}]
 
       assert_equal expected, actual
     end
 
     def test_find_route_with_simple_params
-      YesRoutes.routes = {
-        "GET" => [["/todos/:todo_id/edit", :Todos, :edit]]
-      }
+      YesRoutes.routes = [["/todos/:todo_id/edit", :Todos]]
 
-      actual = @router.send(:find_route, "GET", "/todos/123/edit")
-      expected = [["/todos/:todo_id/edit", :Todos, :edit], { "todo_id" => "123" }]
+      actual = @router.send(:find_route, "/todos/123/edit")
+      expected = [:Todos, { "todo_id" => "123" }]
 
       assert_equal expected, actual
     end
 
     def test_find_route_with_less_simple_params
-      YesRoutes.routes = {
-        "GET" => [["/@:username", :Profile, :show]]
-      }
+      YesRoutes.routes = [["/@:username", :Profile, :show]]
 
-      actual = @router.send(:find_route, "GET", "/@swlkr")
-      expected = [["/@:username", :Profile, :show], { "username" => "swlkr" }]
+      actual = @router.send(:find_route, "/@swlkr")
+      expected = [:Profile, { "username" => "swlkr" }]
 
       assert_equal expected, actual
     end
 
     def test_find_route_with_even_less_simple_params
-      YesRoutes.routes = {
-        "GET" => [["/filter-:filter1-:filter2-:filter3", :A, :b]]
-      }
+      YesRoutes.routes = [["/filter-:filter1-:filter2-:filter3", :A, :b]]
 
-      actual = @router.send(:find_route, "GET", "/filter-hello-there-world")
+      actual = @router.send(:find_route, "/filter-hello-there-world")
       expected = [
-        ["/filter-:filter1-:filter2-:filter3", :A, :b],
+        :A,
         { "filter1" => "hello", "filter2" => "there", "filter3" => "world" }
       ]
 

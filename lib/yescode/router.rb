@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 module Yescode
-  class RouteNotFound < StandardError; end
   class NotFoundError < StandardError; end
   class ServerError < StandardError; end
 
@@ -12,7 +11,9 @@ module Yescode
 
     def call(env)
       request = Rack::Request.new(env)
-      klass, params = find_route!(request.request_method || "", request.path_info || "")
+      klass, params = find_route(request.path_info || "")
+      raise NotFoundError unless klass
+
       env["params"] = params&.merge(request.params)&.transform_keys(&:to_sym) || {}
       component = klass.new(env)
       klass.before_actions&.each do |before_action|
@@ -35,14 +36,13 @@ module Yescode
 
     private
 
-    def find_route!(request_method, path_info)
+    def find_route(path_info)
       params = nil || { "" => nil, "_" => "" } # use value as a type for steep?
-      routes = YesRoutes.routes[request_method] || []
+      routes = YesRoutes.routes || []
       _, klass = routes.find do |route_path,|
         path_regex = Regexp.new("^#{route_path.gsub(/:(\w+)/, '(?<\1>[a-zA-Z0-9_\-=]+)')}$")
         params = path_info.match(path_regex)&.named_captures
       end
-      raise NotFoundError unless klass
 
       [klass, params]
     end

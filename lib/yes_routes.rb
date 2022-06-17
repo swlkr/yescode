@@ -4,12 +4,12 @@ class YesRoutes
   class << self
     attr_accessor :routes, :paths
 
-    def match(verb, path_string, class_name)
+    def route(path_string, class_name)
       YesRoutes.paths ||= {}
       YesRoutes.paths[class_name] = path_string
 
-      YesRoutes.routes ||= Hash.new { |hash, key| hash[key] = [] }
-      YesRoutes.routes[verb] << [path_string, class_name]
+      YesRoutes.routes ||= []
+      YesRoutes.routes << [path_string, class_name]
     end
 
     def path(class_name, params = {})
@@ -17,18 +17,6 @@ class YesRoutes
       coerced_params = coerce_params(params)
 
       sub_params_in_path(path_string, coerced_params)
-    end
-
-    def get(path_string, class_name)
-      match("GET", path_string, class_name)
-    end
-
-    def post(path_string, class_name)
-      match("POST", path_string, class_name)
-    end
-
-    def get_post(path_string, klass)
-      match("POST", path_string, klass, nil)
     end
 
     private
