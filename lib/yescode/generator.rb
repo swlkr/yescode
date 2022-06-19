@@ -357,7 +357,7 @@ module Yescode
             end
 
             def description
-              "Yes, another ruby mvc web framework"
+              "Yes, another ruby web framework"
             end
           end
           RB

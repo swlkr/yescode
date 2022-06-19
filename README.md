@@ -1,6 +1,6 @@
 # yescode
 
-A full stack ruby mvc web framework
+A full stack ruby web framework
 
 # Learning
 

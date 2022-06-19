@@ -4,6 +4,6 @@ class Layout < YesComponent
   end
 
   def description
-    "Make full stack ruby mvc web applications with yescode"
+    "Make full stack ruby web applications with yescode"
   end
 end
