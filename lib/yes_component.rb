@@ -82,6 +82,10 @@ class YesComponent
     ok(body, { "content-type" => "text/html; charset=utf-8" })
   end
 
+  def csv(body = nil)
+    ok(body, { "content-type" => "text/csv; charset=utf-8" })
+  end
+
   def redirect(component_or_url, params = {})
     case component_or_url
     when Class, Symbol
