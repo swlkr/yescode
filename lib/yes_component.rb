@@ -93,15 +93,8 @@ class YesComponent
     ok(body, { "content-type" => "text/csv; charset=utf-8" })
   end
 
-  def redirect(component_or_url, params = {})
-    case component_or_url
-    when Class, Symbol
-      respond(302, nil, { "Location" => path(component_or_url, params) })
-    when String
-      respond(302, nil, { "Location" => component_or_url })
-    else
-      raise(StandardError, "redirect has received invalid type in first argument")
-    end
+  def redirect(location)
+    respond(302, nil, { "Location" => location })
   end
 
   def params
