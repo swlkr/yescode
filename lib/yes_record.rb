@@ -93,7 +93,7 @@ class YesRecord
       if keys.empty?
         "default values"
       else
-        "values (#{keys.map(&:inspect).join(', ')})"
+        "values (#{keys.map { |k| ":#{k}" }.join(', ')})"
       end
     end
 
