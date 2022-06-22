@@ -4,7 +4,7 @@ class YesComponent
   extend Yescode::Strings
 
   class << self
-    attr_accessor :before_actions
+    attr_accessor :before_actions, :logger
 
     def before_action(*symbols)
       @before_actions = symbols

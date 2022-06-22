@@ -36,10 +36,11 @@ class YesApp
       app.call(env)
     end
 
-    def logger(logger_class, params: true, database: true)
+    def logger(logger_class, params: true, database: true, components: true)
       @logger = logger_class
       Yescode::Database.logger = logger_class if database
       Yescode::Router.logger = logger_class if params
+      YesComponent.logger = logger_class if components
     end
 
     def css(filenames)
