@@ -129,6 +129,24 @@ class YesRecord
       Yescode::Database.get_first_value(sql, records.map(&:values)).to_i
     end
 
+    def upsert_all(records, on_conflict:)
+      return 0 if records.nil? || records&.compact&.empty?
+
+      columns = records&.first&.keys&.compact&.map(&:to_sym)
+      return 0 if columns.nil? || columns.empty?
+
+      values = records.size.times.map { "(#{columns.map { '?' }.join(', ')})" }.join(", ")
+      set_clause = columns.map { |k| "#{k} = excluded.#{k}" }.join(", ")
+      sql = <<~SQL
+        insert into '#{table_name}' (#{columns.join(', ')})
+        values #{values}
+        on conflict(#{on_conflict.join(',')})
+        do update set #{set_clause}"
+      SQL
+
+      Yescode::Database.get_first_value(sql, records.map(&:values)).to_i
+    end
+
     def update_all
       # TODO: do it
     end
