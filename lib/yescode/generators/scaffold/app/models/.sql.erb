@@ -1,0 +1,38 @@
+-- name: all -> [<%= class_name %>]
+select *
+from <%= var_name %>
+order by <%= var_name %>_id asc
+
+-- name: count -> Integer
+select count(*)
+from <%= var_name %>
+
+-- name: find -> <%= class_name %>!
+select *
+from <%= var_name %>
+where <%= var_name %>_id = ?
+limit 1
+
+-- name: first -> <%= class_name %>
+select *
+from <%= var_name %>
+order by <%= var_name %>_id asc
+limit 1
+
+-- name: last -> <%= class_name %>
+select *
+from <%= var_name %>
+order by <%= var_name %>_id desc
+limit 1
+
+-- name: newest -> [<%= class_name %>]
+select *
+from <%= var_name %>
+order by created_at desc
+limit :limit
+
+-- name: oldest -> [<%= class_name %>]
+select *
+from <%= var_name %>
+order by created_at
+limit :limit

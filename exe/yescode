@@ -8,7 +8,9 @@ HELP_MESSAGE = <<~TXT
   Usage: yescode <command> [options]
 
   Supported yescode commands:
-    generate      Generate new code (aliases: g, gen)
+    scaffold      Generate a migration, query, routes, model and components
+    component     Generate a blank component
+    migration     Generate a migration
     migrate       Migrates the database with up sql in ./db/migrations/*.sql
     rollback      Rolls the database back with down sql in ./db/migrations/*.sql
 
@@ -23,10 +25,14 @@ TXT
 command, *args = ARGV
 
 case command
-when "g", "gen", "generate"
-  Yescode::Generator.generate(*args)
 when "new"
-  Yescode::Generator.generate_app(args[0])
+  Yescode::Generators::New.call(args[0])
+when "component"
+  Yescode::Generators::Component.new(args[0]).call
+when "scaffold"
+  Yescode::Generators::Scaffold.new(args).call
+when "migration"
+  Yescode::Generators::Migration.new(args[0]).call
 when "migrate"
   YesApp.migrate
 when "rollback"

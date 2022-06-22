@@ -1,0 +1,13 @@
+module <%= class_name %>Helper
+  attr_writer :<%= var_name %>
+
+  private
+
+  def <%= var_name %>
+    @<%= var_name %> ||= <%= class_name %>.find(params[:<%= var_name %>_id])
+  end
+
+  def <%= var_name %>_params
+    params.slice(<%= columns.map { |name,| ":#{name}" }.join(", ") %>)
+  end
+end

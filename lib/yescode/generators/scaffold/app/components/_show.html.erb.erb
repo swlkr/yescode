@@ -1,0 +1,13 @@
+<%%== tag.a "Index", href: <%= class_name %>Index.path %>
+<%%== tag.a "Update", href: <%= class_name %>Update.path(<%= var_name %>) %>
+
+<dl>
+<% columns.each do |name,| -%>
+  <dt>
+    <%= name %>
+  </dt>
+  <dd>
+    <%%= <%= var_name %>.<%= name %> %>
+  </dd>
+<% end -%>
+</dl>

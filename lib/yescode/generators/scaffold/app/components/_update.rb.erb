@@ -1,0 +1,13 @@
+class <%= class_name %>Update < Layout
+  include <%= class_name %>Helper
+
+  def get; end
+
+  def post
+    if <%= var_name %>.update(<%= var_name %>_params)
+      redirect <%= class_name %>Show.path(<%= var_name %>)
+    else
+      get
+    end
+  end
+end

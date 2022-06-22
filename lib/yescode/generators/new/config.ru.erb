@@ -1,0 +1,8 @@
+require "fileutils"
+require "./app"
+
+FILENAME = "tmp/server.pid".freeze
+FileUtils.mkdir_p("tmp")
+File.write(FILENAME, Process.ppid)
+
+run App.freeze.app

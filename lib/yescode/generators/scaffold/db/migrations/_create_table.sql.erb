@@ -1,0 +1,12 @@
+-- name: up
+create table <%= var_name %> (
+  <%= var_name %>_id integer primary key,
+<% columns.each do |name, type| -%>
+  <%= name %> <%= type %>,
+<% end -%>
+  created_at integer not null default(strftime('%s', 'now')),
+  updated_at integer
+)
+
+-- name: down
+drop table <%= var_name %>

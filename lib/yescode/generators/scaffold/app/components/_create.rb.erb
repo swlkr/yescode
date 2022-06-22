@@ -1,0 +1,17 @@
+class <%= class_name %>Create < Layout
+  include <%= class_name %>Helper
+
+  def get
+    @<%= var_name %> ||= <%= class_name %>.new
+  end
+
+  def post
+    @<%= var_name %> = <%= class_name %>.insert(<%= var_name %>_params)
+
+    if @<%= var_name %>.saved?
+      redirect <%= class_name %>Index.path
+    else
+      get
+    end
+  end
+end

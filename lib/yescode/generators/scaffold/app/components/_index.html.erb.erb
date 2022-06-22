@@ -1,0 +1,37 @@
+<%%== tag.a "Index", href: <%= class_name %>Index.path %>
+<%%== tag.a "Create", href: <%= class_name %>Create.path %>
+
+<table>
+  <thead>
+    <tr>
+<% columns.each do |name,| -%>
+      <th>
+        <%= name %>
+      </th>
+<% end -%>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <%% <%= plural_var_name %>.each do |<%= var_name %>| %>
+      <tr>
+<% columns.each do |name,| -%>
+        <td>
+          <%%= <%= var_name %>.<%= name %> %>
+        </td>
+<% end -%>
+        <td>
+          <%%== tag.a "Show", href: <%= class_name %>Show.path(<%= var_name %>) %>
+        </td>
+        <td>
+          <%%== tag.a "Update", href: <%= class_name %>Update.path(<%= var_name %>) %>
+        </td>
+        <td>
+          <%%== display <%= class_name %>Delete, <%= var_name %>: <%= var_name %> %>
+        </td>
+      </tr>
+    <%% end %>
+  </tbody>
+</table>

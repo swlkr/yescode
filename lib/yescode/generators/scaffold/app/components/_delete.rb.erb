@@ -1,0 +1,13 @@
+class <%= class_name %>Delete < Form
+  include <%= class_name %>Helper
+
+  def post
+    <%= var_name %>.delete
+
+    redirect <%= class_name %>Index.path
+  end
+
+  def action
+    <%= class_name %>Delete.path(<%= var_name %>)
+  end
+end

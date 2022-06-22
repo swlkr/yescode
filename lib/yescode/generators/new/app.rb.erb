@@ -1,0 +1,32 @@
+require "yescode"
+
+require_all %w[
+  ./app/modules/*
+  ./app/models/*
+  ./app/emails/*
+  ./app/jobs/*
+  ./app/components/layout
+  ./app/components/form
+  ./app/components/*
+  ./app/routes
+]
+
+class App < YesApp
+  logger YesLogger.new($stdout)
+
+  use YesStatic, root: "public" if development?
+  use YesRackLogger
+  use Rack::ShowExceptions if development?
+  use Rack::Runtime
+  use Rack::ETag
+  use Rack::Head
+  use Rack::ContentLength
+  use Rack::ContentType
+  use Rack::Session::Cookie, default_session_cookie
+  use YesCsrf, raise: development?
+
+  if production?
+    migrate
+    bundle_static_files
+  end
+end

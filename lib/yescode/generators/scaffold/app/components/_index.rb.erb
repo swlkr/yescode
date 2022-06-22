@@ -1,0 +1,7 @@
+class <%= class_name %>Index < Layout
+  attr_accessor :<%= plural_var_name %>
+
+  def get
+    @<%= plural_var_name %> = <%= class_name %>.all
+  end
+end
