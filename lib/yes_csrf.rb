@@ -18,7 +18,9 @@ class YesCsrf
   def call(env)
     raise SessionUnavailable, "YesCsrf depends on session middleware" unless env["rack.session"]
 
-    if skip?(env) || valid?(env)
+    request = Rack::Request.new(env)
+
+    if skip?(request) || valid?(request)
       @app.call(env)
     else
       raise InvalidCsrfToken if @raise_if_invalid
@@ -29,14 +31,14 @@ class YesCsrf
 
   private
 
-  def skip?(env)
-    env[Rack::REQUEST_METHOD] == "GET"
+  def skip?(request)
+    request.request_method == "GET"
   end
 
-  def valid?(env)
-    token = self.class.token(env)
+  def valid?(request)
+    token = self.class.token(request.env)
 
-    Rack::Utils.secure_compare(env["params"][FIELD].to_s, token) ||
-      Rack::Utils.secure_compare(env["X_CSRF_TOKEN"].to_s, token)
+    Rack::Utils.secure_compare(request.params[FIELD].to_s, token) ||
+      Rack::Utils.secure_compare(request["X_CSRF_TOKEN"].to_s, token)
   end
 end
