@@ -78,6 +78,8 @@ class YesComponent
   end
 
   def html(body = nil, layout: true)
+    YesComponent.logger&.info(msg: "Rendering", component: self.class.to_s)
+
     body ||= instance_eval(self.class.compiled_template)
     if layout && !yes_frame?
       @body = body
