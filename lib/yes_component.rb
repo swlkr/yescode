@@ -125,20 +125,22 @@ class YesComponent
     Yescode::Assets.js&.map { |filename| "/js/#{filename}" } || []
   end
 
-  def render(klass)
+  def render(klass, options = {})
+    options = { layout: false }.merge(options)
+    # TODO: add css files from inherited classes if layout is true
+    # TODO: add css file from this class too
     component = klass.new(@env)
+    options.except(:layout).select { |k,| k.is_a?(Symbol) }.each do |k, v|
+      component.send(:"#{k}=", v) if component.respond_to?(:"#{k}=")
+    end
     component.get
-    component.html(nil, layout: false) unless component.body
+    component.html(nil, layout: options[:layout]) unless component.body
 
     component.body
   end
 
-  def view(klass)
-    component = klass.new(@env)
-    component.get
-    component.html(nil, layout: true) unless component.body
-
-    component.body
+  def display(klass, options = {})
+    render(klass, options.merge(layout: true))
   end
 
   def call
