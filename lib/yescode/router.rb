@@ -44,7 +44,7 @@ module Yescode
         params = path_info.match(path_regex)&.named_captures
       end
 
-      [klass, params]
+      [klass, params.transform_values! { |v| v.force_encoding("UTF-8") }]
     end
   end
 end
