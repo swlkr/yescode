@@ -16,30 +16,35 @@ class YesComponent
     end
 
     def template_name
-      name = @template || "#{filename}.html.erb"
-      File.join(".", "app", "components", name)
+      @html || "#{filename}.html.erb"
     end
 
-    def template(name)
-      @template = name
+    def template_path
+      File.join(".", "app", "components", template_name)
     end
 
     def template_file
-      @template_file ||= File.read(template_name)
+      @template_file ||= File.read(template_path)
     end
 
     def compiled_template
-      if Yescode::Env.development?
-        Erubi::Engine.new(template_file, escape: true, freeze: true).src
-      else
-        @compiled_template ||= Erubi::Engine.new(template_file, escape: true, freeze: true).src
-      end
+      @compiled_template ||= Erubi::Engine.new(template_file, escape: true, freeze: true).src
+    rescue Errno::ENOENT => _e
+      return if template_name == "yes_component.html.erb"
+
+      YesComponent.logger&.info(msg: "Missing template", name: template_name)
     end
 
     def path(params = {})
       YesRoutes.path(self, params)
     end
+
+    def html(name)
+      @html = name
+    end
   end
+
+  compiled_template
 
   attr_accessor :response, :body
 
