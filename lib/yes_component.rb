@@ -118,11 +118,11 @@ class YesComponent
   end
 
   def css
-    Yescode::Assets.css&.map { |filename| "/css/#{filename}" }
+    Yescode::Assets.css&.map { |filename| "/css/#{filename}" } || []
   end
 
   def js
-    Yescode::Assets.js&.map { |filename| "/js/#{filename}" }
+    Yescode::Assets.js&.map { |filename| "/js/#{filename}" } || []
   end
 
   def render(klass)
