@@ -178,6 +178,25 @@ class YesComponent
 
   def post; end
 
+  def link(body, attributes = {})
+    tag.a attributes do
+      body
+    end
+  end
+
+  def form(attributes = {})
+    tag.form attributes do
+      tag.input(type: "hidden", name: YesCsrf::FIELD, value: csrf_value)
+      yield if block_given?
+    end
+  end
+
+  def inline_form(_body, attributes = {})
+    tag.form attributes do
+      tag.input(type: "hidden", name: YesCsrf::FIELD, value: csrf_value)
+    end
+  end
+
   private
 
   def request_method
