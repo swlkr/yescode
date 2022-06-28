@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Query caching is also dropped
 - Use `.html.erb` instead of `.emote`
 - Delete every class method in `YesRoutes` except for `route`
+- Redirect now only takes strings
 
 ### Features
 
