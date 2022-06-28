@@ -1,5 +1,5 @@
-<%%== tag.a "Index", href: <%= class_name %>Index.path %>
-<%%== tag.a "Create", href: <%= class_name %>Create.path %>
+<%%== link "Index", href: <%= class_name %>Index.path %>
+<%%== link "Create", href: <%= class_name %>Create.path %>
 
 <table>
   <thead>
@@ -23,10 +23,10 @@
         </td>
 <% end -%>
         <td>
-          <%%== tag.a "Show", href: <%= class_name %>Show.path(<%= var_name %>) %>
+          <%%== link "Show", href: <%= class_name %>Show.path(<%= var_name %>) %>
         </td>
         <td>
-          <%%== tag.a "Update", href: <%= class_name %>Update.path(<%= var_name %>) %>
+          <%%== link "Update", href: <%= class_name %>Update.path(<%= var_name %>) %>
         </td>
         <td>
           <%%== display <%= class_name %>Delete, <%= var_name %>: <%= var_name %> %>
