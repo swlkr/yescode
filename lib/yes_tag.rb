@@ -1,27 +1,63 @@
 class YesTag
-  def a(html, attrs = {})
-    tag("a", html, attrs)
+  SELF_CLOSING_TAGS = %w[area base br col embed hr img input keygen link meta param source track wbr].freeze
+
+  def initialize
+    self
   end
 
-  def span(html, attrs = {})
-    tag("span", html, attrs)
+  def method_missing(name, *args, &block)
+    string(name, *args, &block)
   end
 
-  def input(attrs = {})
-    self_close_tag("input", attrs)
-  end
-
-  def tag(name, html, attrs = {})
-    "<#{name} #{html_attribute_string(attrs)}>#{html}</#{name}>"
-  end
-
-  def self_close_tag(name, attrs = {})
-    "<#{name} #{html_attribute_string(attrs)} />"
+  def respond_to_missing?
+    true
   end
 
   private
 
-  def html_attribute_string(attributes)
-    attributes.map { |k, v| "#{k}=\"#{v}\"" }.join(" ")
+  def open_tag(name, attrs)
+    attr_string = attrs.empty? ? '' : " #{attribute_string(attrs)}"
+    open_tag_str = "<#{name}"
+    self_closing = SELF_CLOSING_TAGS.include?(name)
+
+    "#{open_tag_str}#{attr_string}#{self_closing ? '' : '>'}"
+  end
+
+  def close_tag(name)
+    self_closing = SELF_CLOSING_TAGS.include?(name)
+
+    if self_closing
+      ' />'
+    else
+      "</#{name}>"
+    end
+  end
+
+  def attribute_string(attributes = {})
+    attributes.transform_keys(&:to_s).sort_by { |k, _| k }.map { |k, v| "#{k}=\"#{v}\"" }.join(' ')
+  end
+
+  def string(name, attrs = {}, &block)
+    if block
+      capture(block) do
+        emit open_tag(name, attrs)
+        yield
+        emit close_tag(name)
+      end
+    else
+      "#{open_tag(name, attrs)}#{yield if block}#{close_tag(name)}"
+    end
+  end
+
+  def emit(tag)
+    @output_ ||= String.new
+    @output_ << tag.to_s
+  end
+
+  def capture(block)
+    @output_ = block.binding.eval('@output_') || String.new
+    yield
+
+    @output_
   end
 end

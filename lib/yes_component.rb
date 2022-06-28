@@ -3,6 +3,20 @@
 class YesComponent
   extend Yescode::Strings
 
+  class CaptureEngine < ::Erubi::Engine
+    private
+
+    BLOCK_EXPR = /\s*((\s+|\))do|\{)(\s*\|[^|]*\|)?\s*\Z/
+
+    def add_expression(indicator, code)
+      if BLOCK_EXPR.match?(code) && %w[== =].include?(indicator)
+        src << '' << code
+      else
+        super
+      end
+    end
+  end
+
   class << self
     attr_accessor :before_actions, :logger
 
@@ -28,7 +42,7 @@ class YesComponent
     end
 
     def compiled_template
-      @compiled_template ||= Erubi::Engine.new(template_file, escape: true, freeze: true).src
+      @compiled_template ||= CaptureEngine.new(template_file, escape: true, outvar: "@output_").src
     rescue Errno::ENOENT => _e
       return if template_name == "yes_component.html.erb"
 
