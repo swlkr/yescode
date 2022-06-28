@@ -2,6 +2,7 @@ class YesTag
   SELF_CLOSING_TAGS = %w[area base br col embed hr img input keygen link meta param source track wbr].freeze
 
   def initialize
+    @output_ = String.new
     self
   end
 
@@ -38,24 +39,22 @@ class YesTag
   end
 
   def string(name, attrs = {}, &block)
-    if block
-      capture(block) do
-        emit open_tag(name, attrs)
-        yield
-        emit close_tag(name)
-      end
-    else
-      "#{open_tag(name, attrs)}#{yield if block}#{close_tag(name)}"
+    capture do
+      emit open_tag(name, attrs)
+      emit block&.call
+      emit close_tag(name)
     end
   end
 
   def emit(tag)
-    @output_ ||= String.new
+    return "" unless tag
+
     @output_ << tag.to_s
+
+    @output_
   end
 
-  def capture(block)
-    @output_ = block.binding.eval('@output_') || String.new
+  def capture
     yield
 
     @output_

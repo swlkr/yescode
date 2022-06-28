@@ -171,16 +171,16 @@ class YesComponent
   end
 
   def tag
-    @tag ||= YesTag.new
+    YesTag.new
   end
 
   def get; end
 
   def post; end
 
-  def link(body, attributes = {})
+  def link(content, attributes = {})
     tag.a attributes do
-      body
+      content
     end
   end
 
@@ -191,9 +191,10 @@ class YesComponent
     end
   end
 
-  def inline_form(_body, attributes = {})
+  def inline_form(content, attributes = {})
     tag.form attributes do
       tag.input(type: "hidden", name: YesCsrf::FIELD, value: csrf_value)
+      content
     end
   end
 
